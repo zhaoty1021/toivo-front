@@ -77,23 +77,23 @@
               </router-link>
             </div>
               <div class="articleInfo">
-                
-                <div class="articleInfo-item">
-                  <div>
-                    <el-tooltip
+                <el-tooltip
                       class="box-item"
                       effect="dark"
                       content="原创文章"
                       placement="top"
                     >
-                      <span v-if="item.isOriginal" class="original">
-                        <el-icon><Tickets /></el-icon>
-                      </span>
-                    </el-tooltip>
-
+                  <span v-if="item.isOriginal" class="original">
+                    <el-icon><Tickets /></el-icon>
+                  </span>
+                </el-tooltip>
+                <div class="articleInfo-item">
+                  <div>
                     <span v-if="item.isStick" class="top">置顶</span>
                     <router-link :to="'/article/' + item.id">
-                      <h3 class="xiahuaxian hand-style">{{ item.title }}</h3>
+                      <h3 class="xiahuaxian hand-style">
+                        {{ item.title }}
+                      </h3>
                     </router-link>
                     <div class="summary">
                       <el-text line-clamp="3" size="large">
@@ -101,10 +101,8 @@
                       </el-text>
                     </div>
                   </div>
-
-                  
                 </div>
-              </div>
+              
               <div class="bottumItem">
                 <div class="articleUser">
                   <el-avatar
@@ -179,6 +177,7 @@
                   </span>
                 </div>
               </div>
+            </div>
             </div>
             </el-card>
             <!-- 分页按钮 -->
@@ -449,8 +448,11 @@ const categoryList = ref([
 const articleList = ref([
   {
     id: 1,
-    title: "测试文章",
+    title: "测试文章璐璐璐璐璐璐璐璐璐璐璐璐璐璐璐璐啦啦璐璐璐璐璐璐",
     quantity: 100,
+    isOriginal: true,
+    isStick: true,
+    summary: "测试文章",
   },
 ]);
 const pages = ref(0);
@@ -783,7 +785,7 @@ onMounted(() => {
       
 
       .articleInfo-item {
-        width: 95%;
+        width: 100%;
       }
     }
   }
@@ -1441,7 +1443,8 @@ onMounted(() => {
             color: var(--article-color);
             width: 50%;
             flex: 1; // 让文字内容占据剩余空间
-            padding-left: 20px; // 添加左侧内边距
+            padding-left: 30px; // 添加左侧内边距
+            padding-right: 30px; // 添加右侧内边距
             justify-content: space-between;
 
             .original {
@@ -1467,7 +1470,8 @@ onMounted(() => {
             .articleInfo-item {
               display: flex;
               height: 100px;
-              justify-content: space-between;
+              justify-content: center; // 修改为居中
+              flex-direction: column; // 添加此行以确保文字在垂直方向上居中
 
               a {
                 color: var(--article-color);
@@ -1492,6 +1496,7 @@ onMounted(() => {
               h3 {
                 position: relative;
                 display: inline-block;
+                font-size: 1.72em;
               }
 
               .summary {
