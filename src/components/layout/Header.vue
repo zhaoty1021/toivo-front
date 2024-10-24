@@ -6,7 +6,7 @@
           <a href="https://www.shiyit.com" class="logo-link" style="animation: 10s linear 0s infinite normal none running light_15px;">
           <span class="logo-text">Toivo🍉</span>
           <span class="logo-icon">
-            <img src="http://124.70.85.121:9000/t-blog/test/Toivo-logo.png" alt="Toivo" style="width: 70px; height: 70px;">
+            <img src="@/assets/images/logo.png" alt="Toivo" style="width: 70px; height: 70px;">
           </span>
         </a>
         </div>

@@ -6,6 +6,8 @@
 
     --theme-color: #9999FF;
     --background-color: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.67);
+    --card-border: #1DE9B6;
     --body-color: linear-gradient(0deg,#C4F4FE 0%,#FDEFBE 100%); 
     --wave-color: #f5eed3;
     --text-color: #000;
@@ -42,6 +44,8 @@
 html[data-theme='dark'] {
     --theme-color: #9999FF;
     --background-color: #232323;
+    --card-bg: rgba(255, 255, 255, 0.67);
+    --card-border: #1DE9B6;
     --body-color: #2b2b2b;
     --wave-color: #2b2b2b;
     --text-color: #909399;
@@ -267,26 +271,17 @@ html {
     user-select: none;
 }
 
-.el-tabs__item {
-  color: var(--article-color) !important;
-}
+
 .el-tabs__item:hover span {
-  color: var(--theme-color) !important;
+  color: var(--background-color) !important;
 }
 .el-tabs__nav-wrap::after {
   background-color: var(--background-color);
 }
-.el-tabs__nav-wrap {
-  border: 2px solid var(--background-color);
-  border-bottom: 2px solid var(--background-color);
-  border-radius: 10px;
-}
-.el-tabs__active-bar {
-  background-color: var(--theme-color);
-}
+
 
 .is-active {
-    color: var(--theme-color) !important;
+    color: white;
   }
 #app {
     background: var(--body-color) !important;

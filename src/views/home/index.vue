@@ -19,26 +19,31 @@
       </div>
       <!-- 热门分类 -->
       <div class="hot_category">
+        
         <el-tabs
           v-model="activeName"
           class="demo-tabs"
           @tab-click="handleTabClick"
-        >
+        >     
           <el-tab-pane
             v-for="(item, index) in categoryList"
             :key="index"
             :name="index + ''"
           >
+          
+          
             <template #label>
+              
               <span class="custom-tabs-label">
-                <el-icon style="margin-left: 3px">
-                  <component :is="item.icon" />
-                </el-icon>
                 <span>{{ item.name }}</span>
+                <el-icon style="margin-left: 3px">
+                  <svg-icon :name="item.icon" />
+                </el-icon>
+                
               </span>
             </template>
           </el-tab-pane>
-        </el-tabs>
+          </el-tabs>
       </div>
 
       <div class="sayBox box-shadow">
@@ -426,13 +431,13 @@ const categoryList = ref([
   {
     id: null,
     name: "最新",
-    icon: "Notification",
+    icon: "new",
     desc: "create_time",
   },
   {
     id: null,
     name: "最热",
-    icon: "HotWater",
+    icon: "hot2",
     desc: "quantity",
   },
 ]);
@@ -637,17 +642,41 @@ onMounted(() => {
 }
 
 ::v-deep(.el-tabs__item) {
-  border: 1px solid var(--border-line);
+  background-color: transparent;
   border-radius: 10px;
-  padding-left: 10px;
+  padding-left: 20px;
   padding-right: 20px;
   margin-right: 10px; // 添加右边距
 }
+::v-deep(.el-tabs__item:hover) {
+  background-color: var(--theme-color);
+  color: white;
+}
+::v-deep(.el-tabs__item.is-active) {
+  background-color: var(--theme-color);
+  color: white;
+}
 ::v-deep(.el-tabs__item.is-top:last-child) {
-  padding-right: 10px;
+  padding-right: 20px;
 }
 ::v-deep(.el-tabs__item.is-top:nth-child(2)) {
-  padding-left: 10px;
+  padding-left: 20px;
+}
+::v-deep(.el-tabs__active-bar) {
+  background-color: var(--background-color);
+  height: 2px;
+  
+}
+::v-deep(.el-tabs__nav) {
+  margin: 0 500px;
+}
+::v-deep(.el-tabs__nav-scroll) {
+  // 给整体添加边框
+  border: 2px solid var(--card-border);
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  padding: 5px;
+  
 }
 
 ::v-deep(.el-dialog) {
@@ -1285,9 +1314,13 @@ onMounted(() => {
 
     .hot_category {
       margin-top: 10px;
-
-      ::v-deep(.el-tabs__item:hover span) {
-        color: #409eff;
+      ::v-deep(.el-tabs__nav-wrap) {
+        justify-content: center;
+        position: relative; // 添加这行
+        &::after {
+          // 去掉下划线
+          background-color: transparent;
+        }
       }
     }
 
