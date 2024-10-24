@@ -30,16 +30,12 @@
             :key="index"
             :name="index + ''"
           >
-          
-          
             <template #label>
-              
               <span class="custom-tabs-label">
                 <span>{{ item.name }}</span>
-                <el-icon style="margin-left: 3px">
-                  <svg-icon :name="item.icon" />
+                <el-icon style="margin-left: 5px">
+                  <svg-icon :name="item.icon"/>
                 </el-icon>
-                
               </span>
             </template>
           </el-tab-pane>
@@ -65,13 +61,23 @@
       <div class="content">
         <!-- 左侧内容 -->
         <div style="width: 100%">
+          
           <div class="articleBox" v-if="articleList.length > 0">
             <el-card
               class="articleItem box-shadow-top wow pulse"
               v-for="(item, index) in articleList"
               :key="index"
             >
+            <div class="article-content-wrapper"> 
+            <div class="article-image">
+              <router-link :to="'/article/' + item.id">
+                <img 
+                src="@/assets/article1.png"
+                >
+              </router-link>
+            </div>
               <div class="articleInfo">
+                
                 <div class="articleInfo-item">
                   <div>
                     <el-tooltip
@@ -96,15 +102,7 @@
                     </div>
                   </div>
 
-                  <router-link :to="'/article/' + item.id">
-                    <div class="articleImgBox" style="">
-                      <img
-                        class="articleImg hand-style"
-                        v-lazy="item.avatar"
-                        :key="item.avatar"
-                      />
-                    </div>
-                  </router-link>
+                  
                 </div>
               </div>
               <div class="bottumItem">
@@ -181,6 +179,7 @@
                   </span>
                 </div>
               </div>
+            </div>
             </el-card>
             <!-- 分页按钮 -->
             <div>
@@ -436,12 +435,24 @@ const categoryList = ref([
   },
   {
     id: null,
-    name: "最热",
+    name: "阅读最多",
     icon: "hot2",
     desc: "quantity",
   },
+  {
+    id: null,
+    name: "评论最多",
+    icon: "commenthot",
+    desc: "quantity",
+  },
 ]);
-const articleList = ref([]);
+const articleList = ref([
+  {
+    id: 1,
+    title: "测试文章",
+    quantity: 100,
+  },
+]);
 const pages = ref(0);
 const tagList = ref([]);
 const newArticleList = ref([]);
@@ -640,21 +651,32 @@ onMounted(() => {
   display: flex;
   align-items: center;
 }
-
+.el-icon {
+  font-size: 24px;
+  height: 20px;
+  width: 20px;
+  .svg-icon {
+    height: 100%;
+    width: 100%;
+  }
+}
 ::v-deep(.el-tabs__item) {
   background-color: transparent;
   border-radius: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-right: 10px; // 添加右边距
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 5px; // 添加右边距
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1); // 修改为all过渡
 }
 ::v-deep(.el-tabs__item:hover) {
   background-color: var(--theme-color);
   color: white;
+  transition: background-color 0.3s ease; // 添加过渡效果
 }
 ::v-deep(.el-tabs__item.is-active) {
   background-color: var(--theme-color);
   color: white;
+  transition: background-color 0.3s ease; // 添加过渡效果
 }
 ::v-deep(.el-tabs__item.is-top:last-child) {
   padding-right: 20px;
@@ -663,19 +685,20 @@ onMounted(() => {
   padding-left: 20px;
 }
 ::v-deep(.el-tabs__active-bar) {
-  background-color: var(--background-color);
+  background-color: transparent;
   height: 2px;
+  transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1); // 添加过渡效果
   
 }
-::v-deep(.el-tabs__nav) {
-  margin: 0 500px;
-}
+
 ::v-deep(.el-tabs__nav-scroll) {
   // 给整体添加边框
   border: 2px solid var(--card-border);
   background-color: var(--card-bg);
   border-radius: 10px;
   padding: 5px;
+  display: flex;
+  justify-content: center;
   
 }
 
@@ -1381,19 +1404,45 @@ onMounted(() => {
 
     .content {
       display: flex;
-
       .articleBox {
         font-size: 1rem;
         width: 100%;
+        display: block;
+        
 
         .articleItem {
           position: relative;
           padding: 10px 5px 10px 15px;
-          background-color: var(--background-color);
+          background-color: var(--card-bg);
+          border: 1px solid var(--card-border);
+          border-radius: 20px;
           margin-bottom: 20px;
+          height: auto; // 改为自适应高度
+          min-height: 14em; // 设置最小高度
 
+          .article-content-wrapper {
+            display: flex;
+            flex:1;
+            padding: 7px 0 7px 7px;
+          }
+          .article-image {
+            height: 200px; // 减去上下padding
+            width: 40%;
+            img {
+              width: 100%;
+              height: 100%;
+              border-radius: 8px; // 可选:添加圆角
+              border: 1px solid var(--border-line);
+            }
+          }
           .articleInfo {
+            display: flex;
+            flex-direction: column;
             color: var(--article-color);
+            width: 50%;
+            flex: 1; // 让文字内容占据剩余空间
+            padding-left: 20px; // 添加左侧内边距
+            justify-content: space-between;
 
             .original {
               position: absolute;
@@ -1511,3 +1560,4 @@ onMounted(() => {
   }
 }
 </style>
+
