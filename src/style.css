@@ -188,7 +188,8 @@ html {
 }
 
 .el-card {
-    border: 2px solid var(--border-line);
+    border: 2px solid var(--card-border);
+    background-color: var(--card-bg);
     border-radius: 5px;
 }
 

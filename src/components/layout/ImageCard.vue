@@ -107,10 +107,9 @@ const getRecommendArticle3 = () => {
   height: 250px;
   width: 100%;
   margin: 0;
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   border-radius: 25px;
-  padding-right: 50px; /* 为指示器留出空间 */  
-  box-shadow: 10px 0 50px rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--card-border);
   
 }
 
@@ -121,7 +120,6 @@ const getRecommendArticle3 = () => {
   padding: 0 0 0 30px;
   height: 250px;
   position: absolute;  
-  padding-right: 50px; /* 为指示器留出空间 */  
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 #slide_1:checked ~ .inner_part:nth-of-type(1),
@@ -160,7 +158,7 @@ const getRecommendArticle3 = () => {
 
 .content {
   padding: 0 20px 0 35px;
-  width: 530px;
+  width: 600px;
   margin-left: 50px;
   opacity: 0;
   transition: .6s; 
@@ -171,7 +169,6 @@ const getRecommendArticle3 = () => {
 #slide_2:checked ~ .inner_part .content_2,
 #slide_3:checked ~ .inner_part .content_3 {
   opacity: 1;
-  margin-left: 0;
   z-index: 100;
   transition-delay: .3s;
 }
@@ -201,7 +198,7 @@ const getRecommendArticle3 = () => {
   border-radius: 50px;
   cursor: pointer;
   outline: none;
-  background: #000000;
+  background: var(--theme-color);
   float: right;
 }
 

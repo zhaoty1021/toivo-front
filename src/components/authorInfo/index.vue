@@ -134,8 +134,9 @@ function handleCollect() {
   background-color: var(--background-color);
   position: relative;
   border-radius: 10px;
-  border: 2px solid var(--border-line); // 添加边框
+  border: 2px solid var(--card-border); // 添加边框
   box-shadow: 0 2px 12px 0 var(--border-line); // 添加阴影效果增强视觉
+  background: var(--card-bg);
 
   &::before {
     content: "";

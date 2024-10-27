@@ -88,8 +88,12 @@
                   </span>
                 </el-tooltip>
                 <div class="articleInfo-item">
+
                   <div>
-                    <span v-if="item.isStick" class="top">置顶</span>
+                    
+                    <span v-if="item.isStick" class="top">
+                      <svg-icon name="top" color ="#ff0000"/>
+                      置顶</span>
                     <router-link :to="'/article/' + item.id">
                       <h3 class="xiahuaxian hand-style">
                         {{ item.title }}
@@ -448,7 +452,7 @@ const categoryList = ref([
 const articleList = ref([
   {
     id: 1,
-    title: "测试文章璐璐璐璐璐璐璐璐璐璐璐璐璐璐璐璐啦啦璐璐璐璐璐璐",
+    title: "测试文章璐璐璐璐璐璐璐璐璐",
     quantity: 100,
     isOriginal: true,
     isStick: true,
@@ -1416,7 +1420,7 @@ onMounted(() => {
           position: relative;
           padding: 10px 5px 10px 15px;
           background-color: var(--card-bg);
-          border: 1px solid var(--card-border);
+          border: 2px solid var(--card-border);
           border-radius: 20px;
           margin-bottom: 20px;
           height: auto; // 改为自适应高度
@@ -1483,14 +1487,15 @@ onMounted(() => {
                   #3ca5f6 0,
                   #a86af9 100%
                 );
-                padding-left: 5px;
-                padding-right: 5px;
-                display: inline-block;
-                border-top-right-radius: 5px;
-                border-bottom-left-radius: 5px;
+                padding: 2px 5px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 5px;
                 font-size: 0.9rem;
                 margin-right: 5px;
                 color: #fff;
+                height: 20px; // 设置固定高度
               }
 
               h3 {
