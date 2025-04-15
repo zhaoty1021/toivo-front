@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import './style.css'
+import './styles/style.css'
 import './assets/font/iconfont.css'
 import './assets/font/iconfont.js'
 
@@ -72,3 +72,17 @@ for (const key in components) {
     app.component(componentConfig.name, componentConfig);
 }
 app.mount('#app')
+
+import {
+    // create naive ui
+    create,
+    // component
+    NButton,
+    NTag,
+    NAvatar
+  } from 'naive-ui'
+  
+  const naive = create({
+    components: [NButton, NTag, NAvatar]
+  })
+  app.use(naive)
