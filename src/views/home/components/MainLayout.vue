@@ -89,21 +89,54 @@ const articleList = ref([
         id: 1,
         title: '测试文章璐璐璐璐璐璐璐璐璐',
         quantity: 100,
+        createTime: '2024-07-18 10:08:21',
+        updateTime: '2024-07-18 10:08:21',
+        cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
         isOriginal: true,
         isStick: true,
         summary: '测试文章',
         author: {
             avatar: 'http://124.70.85.121:9000/t-blog/test/20240718-100821.jpeg',
             nickname: 'Tyrone'
-        }
+        },
+        category: {
+            id: 1,
+            name: '测试分类'
+        },
+        tag: [
+            {
+                id: 3,
+                name: '前端开发'
+            }
+        ]
     },
     {
         id: 2,
         title: '测试文章璐璐璐璐璐璐璐璐璐',
         quantity: 100,
+        createTime: '2025-04-18 10:08:21',
+        updateTime: '2025-04-18 10:08:21',
         isOriginal: true,
         isStick: false,
-        summary: '这是第二个测试文章'
+        summary: '这是第二个测试文章',
+        author: {
+            avatar: 'http://124.70.85.121:9000/t-blog/test/20240718-100821.jpeg',
+            nickname: 'Tyrone'
+        },
+        category: {
+            id: 2,
+            name: '测试分类2'
+        },
+        tag: [
+            {
+                id: 2,
+                name: '测试标签2'
+            },
+            {
+                id: 3,
+                name: '测试标签3'
+            }
+        ]
     }
 ])
 

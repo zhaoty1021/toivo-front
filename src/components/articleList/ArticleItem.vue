@@ -14,7 +14,7 @@
             <div class="article-image">
                 <router-link :to="articleLink">
                     <img
-                        :src="article.avatar || defaultImage"
+                        :src="article.cover || defaultImage"
                         :alt="article.title"
                     />
                 </router-link>
@@ -41,7 +41,7 @@
                                     color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
-                                <span>发布日期</span>
+                                <span>{{ article.createTime }}</span>
                                 <span class="article-meta-separator">|</span>
                             </span>
                             <span class="article-meta">
@@ -50,7 +50,15 @@
                                     color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
-                                <span>分类</span>
+                                <a
+                                    @click="
+                                        handleClike(
+                                            article.category.id,
+                                            '/categroy'
+                                        )
+                                    "
+                                    >{{ article.category.name }}</a
+                                >
                                 <span class="article-meta-separator">|</span>
                             </span>
                             <span class="article-meta">
@@ -102,20 +110,14 @@
                     </div>
                     <div class="footer-right">
                         <n-tag
+                            v-for="tag in article.tag"
+                            :key="tag.id"
                             type="success"
                             round="true"
                             size="small"
                             class="article-meta-tag"
-                            @click="handleClike(article.id, '/tags')"
-                            >{{ article.isOriginal }}</n-tag
-                        >
-                        <n-tag
-                            type="success"
-                            round="true"
-                            size="small"
-                            class="article-meta-tag"
-                            @click="handleClike(article.id, '/tags')"
-                            >前端开发</n-tag
+                            @click="handleClike(tag.id, '/tags')"
+                            >{{ tag.name }}</n-tag
                         >
                         <svg-icon name="yuan" color="#ff0000"></svg-icon>
                         <span class="read-time"> 1分钟阅读 </span>
