@@ -57,13 +57,14 @@
                                             '/categroy'
                                         )
                                     "
+                                    class="hand-style"
                                     >{{ article.category.name }}</a
                                 >
                                 <span class="article-meta-separator">|</span>
                             </span>
                             <span class="article-meta">
                                 <svg-icon
-                                    name="category"
+                                    name="dianzan"
                                     color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
@@ -72,7 +73,7 @@
                             </span>
                             <span class="article-meta">
                                 <svg-icon
-                                    name="category"
+                                    name="comment"
                                     color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
