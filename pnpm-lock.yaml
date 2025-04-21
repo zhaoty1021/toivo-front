@@ -26,6 +26,9 @@ importers:
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
+      marked:
+        specifier: ^15.0.8
+        version: 15.0.8
       mavon-editor:
         specifier: ^3.0.1
         version: 3.0.1
@@ -1276,6 +1279,11 @@ packages:
   map-visit@1.0.0:
     resolution: {integrity: sha512-4y7uGv8bd2WdM9vpQsiQNo41Ln1NvhvDRuVt0k2JZQ+ezN2uaQes7lZeZ+QQUHOLQAtDaBJ+7wCbi+ab/KFs+w==}
     engines: {node: '>=0.10.0'}
+
+  marked@15.0.8:
+    resolution: {integrity: sha512-rli4l2LyZqpQuRve5C0rkn6pj3hT8EWPC+zkAxFTAJLxRbENfTAhEQq9itrmf1Y81QtAX5D/MYlGlIomNgj9lA==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   mavon-editor@3.0.1:
     resolution: {integrity: sha512-973cYCwv+AB+fcecsU6Ua6UXATxDMaY0Q7QzKQ/GmRW1sg+3DolZDnCGXth7XHDgrmqKTO57N42fVYujt0wfFw==}
@@ -3120,6 +3128,8 @@ snapshots:
   map-visit@1.0.0:
     dependencies:
       object-visit: 1.0.1
+
+  marked@15.0.8: {}
 
   mavon-editor@3.0.1:
     dependencies:
