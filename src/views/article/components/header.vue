@@ -2,29 +2,27 @@
     <header class="article-header">
         <!-- 背景图 -->
         <div class="header-background">
-            <img :src="backgroundImage" :alt="title" class="bg-image" />
+            <img :src="article.cover" :alt="title" class="bg-image" />
             <div class="overlay"></div>
         </div>
 
         <!-- 内容区域 -->
         <div class="header-content">
-            <h1 class="article-title">{{ title }}</h1>
+            <h1 class="article-title">{{ article.title }}</h1>
 
             <div class="article-meta">
-                <!-- 作者信息 -->
-                <div class="meta-item author-info">
-                    <n-avatar round size="small" :src="author.avatar" />
-                    <span class="author-name">{{ author.name }}</span>
-                </div>
-
                 <!-- 日期信息 -->
                 <div class="meta-item">
-                    <svg-icon name="calendar" class="meta-icon" />
+                    <svg-icon
+                        color="#FFF"
+                        name="createTime"
+                        class="meta-icon"
+                    />
                     <time :datetime="createdAt">{{
-                        formatDate(createdAt)
+                        formatDate(article.createTime)
                     }}</time>
-                    <span v-if="updatedAt" class="update-info">
-                        (更新于 {{ formatDate(updatedAt) }})
+                    <span v-if="article.createTime" class="update-info">
+                        (更新于 {{ formatDate(article.createTime) }})
                     </span>
                 </div>
 
@@ -55,6 +53,8 @@
   <script setup>
 import { ref } from 'vue'
 import { NAvatar } from 'naive-ui'
+import { ar } from 'element-plus/es/locales.mjs'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 // 组件属性
 const props = defineProps({
@@ -96,6 +96,10 @@ const props = defineProps({
     wordCount: {
         type: Number,
         default: 0
+    },
+    article: {
+        type: Object,
+        required: true
     }
 })
 

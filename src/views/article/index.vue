@@ -1,4 +1,5 @@
 <template>
+    <AHeader :article="article" />
     <div class="article-page" v-loading="loading">
         <!-- 添加固定操作栏 -->
         <FloatingActionBar
@@ -79,6 +80,7 @@ import ArticleFooter from './components/ArticleFooter.vue'
 import ArticleSidebar from './components/ArticleSidebar.vue'
 import FloatingActionBar from './components/FloatingActionBar.vue'
 import AISummary from './components/AISummary.vue'
+import AHeader from './components/header.vue'
 
 export default {
     name: 'Article',
@@ -89,12 +91,17 @@ export default {
         ArticleFooter,
         ArticleSidebar,
         FloatingActionBar,
-        AISummary
+        AISummary,
+        AHeader
     },
     data() {
         return {
             article: {
-                title: '',
+                title: 'Hexo + Butterfly 一些常见问题',
+                cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
+                createTime: '2023-10-01 12:00:00',
+                content:
+                    '# 测试\n ## 测试\n\n+ 测试内容\n ```java\n public static void main(String[] args) {\n System.out.println("Hello World");\n }\n ```',
                 category: {},
                 isOriginal: true,
                 readType: 1,

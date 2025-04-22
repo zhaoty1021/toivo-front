@@ -1,7 +1,7 @@
 <template>
     <article class="article-content">
         <!-- 免费内容 -->
-        <div v-if="article.readType === 1" v-html="article.content"></div>
+        <div v-if="article.readType === 1" v-html="renderedContent"></div>
 
         <!-- 会员内容 -->
         <LockedContent
@@ -23,6 +23,22 @@
   
   <script>
 import LockedContent from './LockedContent.vue'
+import { marked } from 'marked'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css' // 选择你喜欢的样式
+
+marked.setOptions({
+    highlight: function (code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return hljs.highlight(lang, code).value
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        return hljs.highlightAuto(code).value
+    }
+})
 
 export default {
     name: 'ArticleContent',
@@ -33,6 +49,11 @@ export default {
         article: {
             type: Object,
             required: true
+        }
+    },
+    computed: {
+        renderedContent() {
+            return marked(this.article.content || '')
         }
     }
 }
