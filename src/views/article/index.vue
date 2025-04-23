@@ -101,7 +101,7 @@ export default {
                 cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
                 createTime: '2023-10-01 12:00:00',
                 content:
-                    '# 测试\n ## 测试\n\n+ 测试内容\n ```java\n public static void main(String[] args) {\n System.out.println("Hello World");\n }\n ```',
+                    '## 测试\n# 测试\n ## 测试\n\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
                 category: {},
                 isOriginal: true,
                 readType: 1,
@@ -174,8 +174,100 @@ export default {
             } finally {
                 this.loading = false
             }
+        },
+        // 新增方法：生成目录结构
+        generateToc() {
+            const articleEl = document.querySelector('.article-content')
+            if (!articleEl) return []
+
+            this.tocItems = Array.from(
+                articleEl.querySelectorAll('h1, h2, h3, h4')
+            ).map((heading) => ({
+                id: heading.id || this.generateHeadingId(heading),
+                text: heading.textContent.trim(),
+                level: parseInt(heading.tagName.substring(1))
+            }))
+
+            // 确保所有标题都有ID
+            document
+                .querySelectorAll(
+                    '.article-content h1, .article-content h2, .article-content h3, .article-content h4'
+                )
+                .forEach((heading) => {
+                    if (!heading.id) {
+                        heading.id = this.generateHeadingId(heading)
+                    }
+                })
+        },
+
+        // 生成唯一ID
+        generateHeadingId(heading) {
+            return 'heading-' + Math.random().toString(36).substr(2, 9)
+        },
+
+        // 初始化IntersectionObserver
+        initHeadingObserver() {
+            this.observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (
+                            entry.isIntersecting &&
+                            entry.intersectionRatio > 0
+                        ) {
+                            this.activeHeading = entry.target.id
+                        }
+                    })
+                },
+                {
+                    rootMargin: '-50px 0px -50% 0px',
+                    threshold: 0.1
+                }
+            )
+
+            // 观察所有标题
+            document
+                .querySelectorAll(
+                    '.article-content h1, .article-content h2, .article-content h3, .article-content h4'
+                )
+                .forEach((heading) => {
+                    this.observer.observe(heading)
+                })
+        },
+
+        // 滚动到指定标题
+        scrollToHeading(id) {
+            const element = document.getElementById(id)
+            if (element) {
+                const header = document.querySelector('.site-header') || {
+                    offsetHeight: 0
+                }
+                const targetPosition =
+                    element.offsetTop - header.offsetHeight - 20
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                })
+            }
+        },
+
+        // 更新阅读进度
+        updateReadProgress() {
+            const articleHeight =
+                document.querySelector('.article-content')?.offsetHeight || 0
+            const scrollPosition = window.scrollY
+            const windowHeight = window.innerHeight
+
+            if (articleHeight > 0) {
+                const progress = Math.min(
+                    100,
+                    Math.round(
+                        (scrollPosition / (articleHeight - windowHeight)) * 100
+                    )
+                )
+                this.readProgress = progress >= 0 ? progress : 0
+            }
         }
-        // ... (其他方法保持不变)
     },
     async created() {
         await this.getArticle()
@@ -184,7 +276,11 @@ export default {
     mounted() {
         window.addEventListener('scroll', this.updateActiveHeading)
         this.$nextTick(() => {
-            this.initImagePreview()
+            this.generateToc()
+            this.initHeadingObserver()
+
+            // 添加滚动监听
+            window.addEventListener('scroll', this.updateReadProgress)
         })
     },
     beforeDestroy() {
@@ -194,6 +290,10 @@ export default {
         images.forEach((img) => {
             img.removeEventListener('click', this.handleImageClick)
         })
+        if (this.observer) {
+            this.observer.disconnect()
+        }
+        window.removeEventListener('scroll', this.updateReadProgress)
     },
     watch: {
         $route(to, from) {

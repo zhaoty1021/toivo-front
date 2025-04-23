@@ -1,44 +1,49 @@
 <template>
     <article class="article-content">
-        <!-- 免费内容 -->
+        <div class="theme-switcher">
+            <label for="highlight-style">代码风格：</label>
+            <select
+                id="highlight-style"
+                v-model="highlightStyle"
+                @change="changeHighlightStyle"
+            >
+                <option
+                    v-for="style in highlightStyles"
+                    :key="style.value"
+                    :value="style.value"
+                >
+                    {{ style.label }}
+                </option>
+            </select>
+        </div>
+
+        <!-- 内容部分保持不变 -->
         <div v-if="article.readType === 1" v-html="renderedContent"></div>
-
-        <!-- 会员内容 -->
         <LockedContent
-            v-else-if="article.readType === 2"
+            v-else
             :content="article.content"
-            type="member"
-            @action="$emit('upgrade')"
-        />
-
-        <!-- 付费内容 -->
-        <LockedContent
-            v-else-if="article.readType === 3"
-            :content="article.content"
-            type="paid"
-            @action="$emit('purchase')"
+            :type="article.readType === 2 ? 'member' : 'paid'"
+            @action="$emit(article.readType === 2 ? 'upgrade' : 'purchase')"
         />
     </article>
 </template>
-  
-  <script>
-import LockedContent from './LockedContent.vue'
-import { marked } from 'marked'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css' // 选择你喜欢的样式
 
-marked.setOptions({
-    highlight: function (code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return hljs.highlight(lang, code).value
-            } catch (e) {
-                console.error(e)
-            }
-        }
-        return hljs.highlightAuto(code).value
-    }
-})
+<script>
+import LockedContent from './LockedContent.vue'
+import MarkdownIt from 'markdown-it'
+import hljs from 'highlight.js'
+// 动态导入所有主题样式
+const highlightStyles = [
+    { value: 'github', label: 'GitHub' },
+    { value: 'atom-one-dark', label: 'Atom One Dark' },
+    { value: 'vs2015', label: 'VS2015' },
+    { value: 'school-book', label: 'School Book' },
+    { value: 'tomorrow-night-blue', label: 'Tomorrow Night Blue' }
+]
+
+import markdownItAnchor from 'markdown-it-anchor'
+import markdownItToc from 'markdown-it-toc-done-right'
+import markdownItEmoji from 'markdown-it-emoji/dist/markdown-it-emoji.js'
 
 export default {
     name: 'ArticleContent',
@@ -51,15 +56,109 @@ export default {
             required: true
         }
     },
+    data() {
+        return {
+            md: null,
+            highlightStyle: 'github', // 默认主题
+            highlightStyles: highlightStyles.map((s) => ({
+                value: s.value,
+                label: s.label
+            })),
+            styleElement: null // 用于动态切换样式
+        }
+    },
+    created() {
+        this.initMarkdown()
+        this.loadHighlightStyle(this.highlightStyle)
+    },
     computed: {
         renderedContent() {
-            return marked(this.article.content || '')
+            return this.md.render(this.article.content || '')
+        }
+    },
+    methods: {
+        initMarkdown() {
+            this.md = new MarkdownIt({
+                html: true,
+                linkify: true,
+                typographer: true,
+                highlight: (str, lang) => {
+                    const language =
+                        lang && hljs.getLanguage(lang) ? lang : 'plaintext'
+                    try {
+                        return `<pre class="hljs"><code>${
+                            hljs.highlight(str, { language }).value
+                        }</code></pre>`
+                    } catch (err) {
+                        console.error('代码高亮错误:', err)
+                        return `<pre class="hljs"><code>${this.md.utils.escapeHtml(
+                            str
+                        )}</code></pre>`
+                    }
+                }
+            })
+            this.md
+                .use(markdownItAnchor)
+                .use(markdownItToc)
+                .use(markdownItEmoji)
+        },
+        loadHighlightStyle(styleName) {
+            // 移除旧样式
+            if (this.styleElement) {
+                document.head.removeChild(this.styleElement)
+                this.styleElement = null
+            }
+
+            // 创建新的 link 标签加载样式
+            const styleLink = document.createElement('link')
+            styleLink.rel = 'stylesheet'
+            styleLink.type = 'text/css'
+            styleLink.href = `https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/${styleName}.min.css`
+            styleLink.onload = () => {
+                this.styleElement = styleLink
+            }
+            styleLink.onerror = () => {
+                console.error(
+                    `样式 ${styleName} 加载失败，使用默认 GitHub 主题`
+                )
+                if (styleName !== 'github') {
+                    this.highlightStyle = 'github'
+                    this.loadHighlightStyle('github')
+                }
+            }
+
+            document.head.appendChild(styleLink)
+        },
+        changeHighlightStyle() {
+            this.loadHighlightStyle(this.highlightStyle)
         }
     }
 }
 </script>
   
-  <style lang="scss" scoped>
+<style lang="scss" scoped>
+.theme-switcher {
+    margin-bottom: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+
+    label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    select {
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+
+        &:hover {
+            border-color: #409eff;
+        }
+    }
+}
 .article-content {
     padding: 0 32px;
     line-height: 1.8;
@@ -67,42 +166,13 @@ export default {
     font-size: 1.1em;
 
     :deep(h2) {
-        font-size: 1.8em;
+        font-size: 1.6em; /* 小于h1 */
         margin: 32px 0 24px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid rgba(64, 158, 255, 0.1);
-        position: relative;
-        color: #333333;
-
-        &::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 50px;
-            height: 2px;
-            background: #409eff;
-        }
     }
 
     :deep(h3) {
-        font-size: 1.4em;
+        font-size: 1.3em; /* 小于h2 */
         margin: 24px 0;
-        color: #333333;
-        position: relative;
-        padding-left: 24px;
-
-        &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 20px;
-            background: #409eff;
-            border-radius: 4px;
-        }
     }
 
     :deep(p) {
@@ -386,6 +456,22 @@ export default {
             color: #666666;
             font-size: 1.2em;
         }
+    }
+    :deep(pre) {
+        position: relative;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        margin: 1.5em 0;
+        overflow: hidden;
+        counter-reset: line;
+    }
+    :deep(code:not([class])) {
+        font-size: 16px; /* 修改字体大小 */
+        line-height: 1.7; /* 修改行高 */
+        background: #fff; /* 修改背景色 */
+        margin: 0 12px; /* 修改外边距 */
+        margin-top: -10px;
     }
 }
 </style>
