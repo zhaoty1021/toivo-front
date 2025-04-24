@@ -23,6 +23,7 @@
                         active: activeHeading === item.id,
                         [`level-${item.level}`]: true
                     }"
+                    :style="{ paddingLeft: `${16 + (item.level - 1) * 12}px` }"
                     @click="scrollToHeading(item.id)"
                 >
                     {{ item.text }}
@@ -32,7 +33,7 @@
     </aside>
 </template>
   
-  <script>
+<script>
 export default {
     name: 'ArticleSidebar',
     props: {
@@ -71,7 +72,7 @@ export default {
 }
 </script>
   
-  <style lang="scss" scoped>
+<style lang="scss" scoped>
 .article-sidebar {
     .toc-container {
         position: sticky;
@@ -83,6 +84,14 @@ export default {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid #eef0f3;
         backdrop-filter: blur(10px);
+
+        &:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+            &::before {
+                opacity: 1;
+            }
+        }
 
         &::before {
             content: '';
@@ -132,6 +141,15 @@ export default {
                 background: rgba(74, 144, 226, 0.05);
                 border-radius: 12px;
                 transition: all 0.3s ease;
+
+                &.completed {
+                    background: rgba(16, 185, 129, 0.1);
+                    color: #10b981;
+
+                    i {
+                        color: #10b981;
+                    }
+                }
 
                 i {
                     color: #4a90e2;
@@ -189,7 +207,6 @@ export default {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                padding-left: 16px;
 
                 &::before {
                     content: '';
@@ -213,7 +230,7 @@ export default {
                         rgba(74, 144, 226, 0.05),
                         rgba(74, 144, 226, 0.02)
                     );
-                    padding-left: 20px;
+                    transform: translateX(4px);
 
                     &::before {
                         width: 6px;
@@ -230,7 +247,7 @@ export default {
                         rgba(74, 144, 226, 0.05)
                     );
                     font-weight: 500;
-                    padding-left: 20px;
+                    transform: translateX(4px);
 
                     &::before {
                         width: 6px;

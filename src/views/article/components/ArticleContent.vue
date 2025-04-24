@@ -38,7 +38,13 @@ const highlightStyles = [
     { value: 'atom-one-dark', label: 'Atom One Dark' },
     { value: 'vs2015', label: 'VS2015' },
     { value: 'school-book', label: 'School Book' },
-    { value: 'tomorrow-night-blue', label: 'Tomorrow Night Blue' }
+    { value: 'tomorrow-night-blue', label: 'Tomorrow Night Blue' },
+    { value: 'solarized-light', label: 'Solarized Light' },
+    { value: 'dracula', label: 'Dracula' },
+    { value: 'a11y-light', label: 'A11y Light' },
+    { value: 'github-dark', label: 'GitHub Dark' },
+    { value: 'github-dark-dimmed', label: 'GitHub Dark Dimmed' },
+    { value: 'github-dark-colorblind', label: 'GitHub Dark Colorblind' }
 ]
 
 import markdownItAnchor from 'markdown-it-anchor'
@@ -165,9 +171,14 @@ export default {
     color: #333333;
     font-size: 1.1em;
 
+    :deep(h1) {
+        font-size: 1.9em; /* 小于h1 */
+        margin: 32px 0 24px;
+    }
+
     :deep(h2) {
         font-size: 1.6em; /* 小于h1 */
-        margin: 32px 0 24px;
+        margin: 3px 0 2px;
     }
 
     :deep(h3) {

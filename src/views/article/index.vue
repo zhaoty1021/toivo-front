@@ -72,8 +72,6 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
 import Comment from '@/components/Comment/index.vue'
 
-import { marked } from 'marked'
-
 import ArticleHeader from './components/ArticleHeader.vue'
 import ArticleContent from './components/ArticleContent.vue'
 import ArticleFooter from './components/ArticleFooter.vue'
@@ -101,7 +99,7 @@ export default {
                 cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
                 createTime: '2023-10-01 12:00:00',
                 content:
-                    '## 测试\n# 测试\n ## 测试\n\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
+                    '# 测试\n## 测试\n这就是我的测试内容\n ## 测试\n\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
                 category: {},
                 isOriginal: true,
                 readType: 1,
@@ -135,6 +133,7 @@ export default {
             return window.location.href
         }
     },
+    // 修改后的方法
     methods: {
         async getArticle() {
             this.loading = true
@@ -207,30 +206,54 @@ export default {
 
         // 初始化IntersectionObserver
         initHeadingObserver() {
+            // Store visible headings
+            const visibleHeadings = new Set()
+
             this.observer = new IntersectionObserver(
                 (entries) => {
                     entries.forEach((entry) => {
-                        if (
-                            entry.isIntersecting &&
-                            entry.intersectionRatio > 0
-                        ) {
-                            this.activeHeading = entry.target.id
+                        // Add or remove headings from the visible set
+                        if (entry.isIntersecting) {
+                            visibleHeadings.add(entry.target.id)
+                        } else {
+                            visibleHeadings.delete(entry.target.id)
                         }
                     })
+
+                    // Find the topmost visible heading
+                    if (visibleHeadings.size > 0) {
+                        const visibleHeadingsArray = Array.from(visibleHeadings)
+                        const headingElements = visibleHeadingsArray.map((id) =>
+                            document.getElementById(id)
+                        )
+
+                        // Sort headings by their position in the viewport
+                        headingElements.sort((a, b) => {
+                            return (
+                                a.getBoundingClientRect().top -
+                                b.getBoundingClientRect().top
+                            )
+                        })
+
+                        // Set the topmost as active
+                        this.activeHeading = headingElements[0].id
+                    }
                 },
                 {
-                    rootMargin: '-50px 0px -50% 0px',
-                    threshold: 0.1
+                    rootMargin: '-64px 0px -90% 0px', // Adjust these values based on your layout
+                    threshold: [0, 0.25, 0.5, 0.75, 1]
                 }
             )
 
-            // 观察所有标题
+            // Observe all headings
             document
                 .querySelectorAll(
                     '.article-content h1, .article-content h2, .article-content h3, .article-content h4'
                 )
                 .forEach((heading) => {
-                    this.observer.observe(heading)
+                    if (heading.id) {
+                        this.observer.observe(heading)
+                    }
                 })
         },
 
@@ -241,32 +264,62 @@ export default {
                 const header = document.querySelector('.site-header') || {
                     offsetHeight: 0
                 }
-                const targetPosition =
-                    element.offsetTop - header.offsetHeight - 20
+                const offset = header.offsetHeight + 20
+                const targetPosition = element.offsetTop - offset
 
+                // 暂时停止 Observer 更新
+                if (this.observer) {
+                    this.observer.disconnect()
+                }
+
+                // 滚动
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
                 })
+
+                // 设置 active，并在滚动完成后恢复 observer
+                this.activeHeading = id
+
+                // 恢复 observer 观察（延迟一点避免抢占）
+                setTimeout(() => {
+                    this.initHeadingObserver()
+                }, 800)
             }
         },
 
-        // 更新阅读进度
         updateReadProgress() {
-            const articleHeight =
-                document.querySelector('.article-content')?.offsetHeight || 0
-            const scrollPosition = window.scrollY
-            const windowHeight = window.innerHeight
+            const article = document.querySelector('.article-content')
+            if (!article) return
 
-            if (articleHeight > 0) {
-                const progress = Math.min(
-                    100,
-                    Math.round(
-                        (scrollPosition / (articleHeight - windowHeight)) * 100
-                    )
-                )
-                this.readProgress = progress >= 0 ? progress : 0
+            const scrollY = window.scrollY || document.documentElement.scrollTop
+            const windowHeight = window.innerHeight
+            const rect = article.getBoundingClientRect()
+            const articleTop = rect.top + scrollY
+            const articleHeight = article.scrollHeight
+            const articleBottom = articleTop + articleHeight
+
+            // 如果文章还没进入视口
+            if (scrollY + windowHeight < articleTop) {
+                this.readProgress = 0
+                return
             }
+
+            // 如果已经完全阅读完
+            if (scrollY > articleBottom) {
+                this.readProgress = 100
+                return
+            }
+
+            // 计算滚动的相对距离
+            const scrolled = scrollY + windowHeight - articleTop
+            const totalScrollable = articleHeight + windowHeight
+            const progress = Math.min(
+                100,
+                Math.max(0, Math.round((scrolled / totalScrollable) * 100))
+            )
+
+            this.readProgress = progress
         }
     },
     async created() {
@@ -275,12 +328,11 @@ export default {
     },
     mounted() {
         window.addEventListener('scroll', this.updateActiveHeading)
+        window.addEventListener('scroll', this.updateReadProgress)
         this.$nextTick(() => {
             this.generateToc()
             this.initHeadingObserver()
-
-            // 添加滚动监听
-            window.addEventListener('scroll', this.updateReadProgress)
+            this.updateReadProgress()
         })
     },
     beforeDestroy() {
