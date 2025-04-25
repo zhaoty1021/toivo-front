@@ -18,7 +18,6 @@
         >
             <main class="article-main">
                 <!-- 文章头部 -->
-                <ArticleHeader :article="article" :read-time="readTime" />
 
                 <!-- AI简短介绍 -->
                 <AISummary
@@ -30,6 +29,7 @@
 
                 <!-- 文章内容 -->
                 <ArticleContent
+                    :key="article.id || $route.params.id"
                     :article="article"
                     @upgrade="handleUpgrade"
                     @purchase="handlePurchase"
@@ -99,7 +99,7 @@ export default {
                 cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
                 createTime: '2023-10-01 12:00:00',
                 content:
-                    '# 测试\n## 测试\n这就是我的测试内容\n ## 测试\n\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
+                    '# 测试\n## 测试\n这就是我的测试内容\n ### 测试\n\n+ 测试内容\n+ 测试内容\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
                 category: {},
                 isOriginal: true,
                 readType: 1,
@@ -125,7 +125,8 @@ export default {
             images: [],
             showPaymentDialog: false,
             showMembershipDialog: false,
-            isAiDescriptionExpanded: true
+            isAiDescriptionExpanded: true,
+            contentRendered: false
         }
     },
     computed: {
@@ -135,84 +136,174 @@ export default {
     },
     // 修改后的方法
     methods: {
+        beforeRouteUpdate(to, from, next) {
+            // 断开旧的观察器
+            if (this.observer) {
+                this.observer.disconnect()
+                this.observer = null
+            }
+
+            // 清空所有相关数据
+            this.tocItems = []
+            this.activeHeading = ''
+            this.readProgress = 0
+
+            // 重置文章数据
+            this.article = {
+                title: '',
+                content: '',
+                cover: '',
+                createTime: '',
+                category: {},
+                isOriginal: true,
+                readType: 1,
+                price: 0
+            }
+
+            // 继续路由导航
+            next()
+        },
         async getArticle() {
             this.loading = true
-            hljs.configure({
-                ignoreUnescapedHTML: true
-            })
             try {
-                const res = await getArticleDetailApi(this.$route.params.id)
+                // 获取新文章数据
+                // const res = await getArticleDetailApi(this.$route.params.id)
                 this.article = {
-                    ...res.data,
-                    content: res.data.content
-                        ? this.addLazyLoadToImages(res.data.content)
-                        : ''
+                    title: 'Hexo + Butterfly 一些常见问题',
+                    cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
+                    createTime: '2023-10-01 12:00:00',
+                    content:
+                        '# 测试\n## 测试\n这就是我的测试内容\n ### 测试\n\n1. 测试内容\n测试内容\n3. 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
+                    category: {},
+                    isOriginal: true,
+                    readType: 1,
+                    price: 0
                 }
 
+                // 关键点：使用多个 nextTick 和足够的延迟，确保内容完全渲染
                 await this.$nextTick()
 
+                // 使用 setTimeout 确保 DOM 完全更新
                 setTimeout(() => {
+                    // 重新生成目录
                     this.generateToc()
-                    document.querySelectorAll('pre code').forEach((block) => {
-                        hljs.highlightBlock(block)
-                    })
-                    this.addCopyButtons()
-                    this.addLineNumbers()
-                    this.initImagePreview()
-                    this.updateActionBarPosition()
-                    this.initializeCodeBlocks()
-                }, 100)
 
-                const textContent = this.article.content.replace(
-                    /<[^>]+>/g,
-                    ' '
-                )
-                this.readTime = Math.ceil(textContent.split(/\s+/).length / 300)
+                    // 初始化观察器
+                    if (!this.observer) {
+                        this.initHeadingObserver()
+                    }
+
+                    this.updateReadProgress()
+                    this.loading = false
+                }, 300) // 增加延迟时间，确保内容渲染完成
             } catch (error) {
-                this.$message.error('获取文章详情失败')
-            } finally {
+                console.error('加载失败:', error)
                 this.loading = false
             }
         },
-        // 新增方法：生成目录结构
-        generateToc() {
-            const articleEl = document.querySelector('.article-content')
-            if (!articleEl) return []
+        // 新增方法：等待内容渲染完成
+        waitForContentRender() {
+            return new Promise((resolve) => {
+                let attempts = 0
+                const maxAttempts = 5
 
-            this.tocItems = Array.from(
-                articleEl.querySelectorAll('h1, h2, h3, h4')
-            ).map((heading) => ({
-                id: heading.id || this.generateHeadingId(heading),
-                text: heading.textContent.trim(),
-                level: parseInt(heading.tagName.substring(1))
-            }))
+                const check = () => {
+                    attempts++
+                    const content = document.querySelector('.article-content')
+                    const hasHeadings =
+                        content &&
+                        content.querySelectorAll('h1, h2, h3, h4').length > 0
 
-            // 确保所有标题都有ID
-            document
-                .querySelectorAll(
-                    '.article-content h1, .article-content h2, .article-content h3, .article-content h4'
-                )
-                .forEach((heading) => {
-                    if (!heading.id) {
-                        heading.id = this.generateHeadingId(heading)
+                    if (hasHeadings || attempts >= maxAttempts) {
+                        resolve()
+                    } else {
+                        setTimeout(check, 100 * attempts)
                     }
-                })
+                }
+
+                check()
+            })
         },
 
-        // 生成唯一ID
-        generateHeadingId(heading) {
-            return 'heading-' + Math.random().toString(36).substr(2, 9)
+        // 新增方法：生成目录结构
+        generateToc() {
+            console.log('正在为文章生成目录:', this.$route.params.id)
+
+            // 清空现有目录
+            this.tocItems = []
+
+            // 强制重新查询 DOM
+            const articleContent = document.querySelector('.article-content')
+            if (!articleContent) {
+                console.warn('无法找到文章内容元素，目录生成失败')
+                return
+            }
+
+            // 直接从当前页面的 DOM 获取标题元素，确保获取的是最新的
+            const headings = articleContent.querySelectorAll('h1, h2, h3, h4')
+            console.log(
+                `当前文章中找到 ${headings.length} 个标题元素:`,
+                Array.from(headings).map((h) => h.textContent)
+            )
+
+            if (headings.length === 0) {
+                console.warn('当前文章没有找到标题元素')
+                return
+            }
+
+            // 处理标题元素，创建目录项
+            this.tocItems = Array.from(headings).map((heading, index) => {
+                // 确保每个标题都有 ID
+                if (!heading.id) {
+                    // 生成唯一 ID，包含文章 ID 和标题文本
+                    const headingId = `heading-${
+                        this.$route.params.id
+                    }-${index}-${Date.now()}`
+                    heading.id = headingId
+                }
+
+                return {
+                    id: heading.id,
+                    text: heading.textContent.trim(),
+                    level: parseInt(heading.tagName.substring(1))
+                }
+            })
+
+            console.log('生成的目录项:', this.tocItems)
+
+            // 更新后立即初始化观察器
+            this.$nextTick(() => {
+                this.initHeadingObserver()
+            })
+        },
+
+        generateHeadingId(heading, index) {
+            // Create a unique ID based on text content and position
+            const baseId = heading.textContent
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '')
+
+            // Include route ID to ensure uniqueness between different articles
+            return `heading-${this.$route.params.id}-${baseId || index}`
         },
 
         // 初始化IntersectionObserver
         initHeadingObserver() {
-            // Store visible headings
+            // 清理旧的观察器
+            if (this.observer) {
+                this.observer.disconnect()
+                this.observer = null
+            }
+
+            // 创建可见标题集合
             const visibleHeadings = new Set()
 
+            // 初始化交叉观察器
             this.observer = new IntersectionObserver(
                 (entries) => {
                     entries.forEach((entry) => {
-                        // Add or remove headings from the visible set
                         if (entry.isIntersecting) {
                             visibleHeadings.add(entry.target.id)
                         } else {
@@ -220,72 +311,91 @@ export default {
                         }
                     })
 
-                    // Find the topmost visible heading
+                    // 找出最顶部的可见标题
                     if (visibleHeadings.size > 0) {
                         const visibleHeadingsArray = Array.from(visibleHeadings)
-                        const headingElements = visibleHeadingsArray.map((id) =>
-                            document.getElementById(id)
-                        )
+                        const headingElements = visibleHeadingsArray
+                            .map((id) => document.getElementById(id))
+                            .filter((el) => el !== null)
 
-                        // Sort headings by their position in the viewport
-                        headingElements.sort((a, b) => {
-                            return (
-                                a.getBoundingClientRect().top -
-                                b.getBoundingClientRect().top
-                            )
-                        })
+                        if (headingElements.length > 0) {
+                            // 按照在视口中的位置排序
+                            headingElements.sort((a, b) => {
+                                return (
+                                    a.getBoundingClientRect().top -
+                                    b.getBoundingClientRect().top
+                                )
+                            })
 
-                        // Set the topmost as active
-                        this.activeHeading = headingElements[0].id
+                            // 设置最顶部的标题为活动标题
+                            this.activeHeading = headingElements[0].id
+                        }
                     }
                 },
                 {
-                    rootMargin: '-64px 0px -90% 0px', // Adjust these values based on your layout
+                    rootMargin: '-64px 0px -90% 0px',
                     threshold: [0, 0.25, 0.5, 0.75, 1]
                 }
             )
 
-            // Observe all headings
-            document
-                .querySelectorAll(
-                    '.article-content h1, .article-content h2, .article-content h3, .article-content h4'
-                )
-                .forEach((heading) => {
+            // 开始观察当前文章中的所有标题
+            const articleContent = document.querySelector('.article-content')
+            if (articleContent) {
+                const headings =
+                    articleContent.querySelectorAll('h1, h2, h3, h4')
+                console.log(`为 ${headings.length} 个标题设置观察器`)
+
+                headings.forEach((heading) => {
                     if (heading.id) {
                         this.observer.observe(heading)
                     }
                 })
+            }
         },
 
         // 滚动到指定标题
         scrollToHeading(id) {
-            const element = document.getElementById(id)
-            if (element) {
-                const header = document.querySelector('.site-header') || {
-                    offsetHeight: 0
+            this.$nextTick(() => {
+                // 1. 使用IntersectionObserver的检测结果（而不是手动计算）
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (
+                                entry.isIntersecting &&
+                                entry.intersectionRatio > 0.3
+                            ) {
+                                // 找到正确位置后停止观察
+                                observer.disconnect()
+                            }
+                        })
+                    },
+                    {
+                        threshold: [0.3, 0.5, 0.7],
+                        rootMargin: `-${this.getDynamicOffset()}px 0px 0px 0px`
+                    }
+                )
+
+                // 2. 直接触发滚动（让浏览器处理精确位置）
+                const element = document.getElementById(id)
+                if (element) {
+                    element.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    })
+
+                    // 3. 开始观察（用于后续修正）
+                    observer.observe(element)
                 }
-                const offset = header.offsetHeight + 20
-                const targetPosition = element.offsetTop - offset
-
-                // 暂时停止 Observer 更新
-                if (this.observer) {
-                    this.observer.disconnect()
-                }
-
-                // 滚动
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                })
-
-                // 设置 active，并在滚动完成后恢复 observer
-                this.activeHeading = id
-
-                // 恢复 observer 观察（延迟一点避免抢占）
-                setTimeout(() => {
-                    this.initHeadingObserver()
-                }, 800)
-            }
+            })
+        },
+        getDynamicOffset() {
+            // 动态计算偏移量（与手动滚动时相同逻辑）
+            return (
+                (document.querySelector('header')?.offsetHeight || 60) +
+                (document.querySelector('.floating-action-bar')?.offsetHeight ||
+                    0) +
+                20
+            )
         },
 
         updateReadProgress() {
@@ -327,30 +437,33 @@ export default {
         window.addEventListener('resize', this.updateActionBarPosition)
     },
     mounted() {
-        window.addEventListener('scroll', this.updateActiveHeading)
         window.addEventListener('scroll', this.updateReadProgress)
-        this.$nextTick(() => {
-            this.generateToc()
-            this.initHeadingObserver()
-            this.updateReadProgress()
+
+        // 确保在组件挂载后获取文章数据
+        this.getArticle().then(() => {
+            console.log('文章数据加载完成，开始初始化目录')
         })
     },
     beforeDestroy() {
-        window.removeEventListener('scroll', this.updateActiveHeading)
+        // 清理所有事件监听器和观察器
         window.removeEventListener('resize', this.updateActionBarPosition)
+        window.removeEventListener('scroll', this.updateReadProgress)
+
+        if (this.observer) {
+            this.observer.disconnect()
+            this.observer = null
+        }
+
         const images = document.querySelectorAll('.article-content img')
         images.forEach((img) => {
             img.removeEventListener('click', this.handleImageClick)
         })
-        if (this.observer) {
-            this.observer.disconnect()
-        }
-        window.removeEventListener('scroll', this.updateReadProgress)
     },
     watch: {
-        $route(to, from) {
-            if (to.params.id !== from.params.id) {
-                this.getArticleData()
+        contentRendered(newVal) {
+            if (newVal) {
+                // 内容已渲染，可以执行相关操作
+                this.updateReadProgress()
             }
         }
     }

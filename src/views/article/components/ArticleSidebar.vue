@@ -56,17 +56,7 @@ export default {
     },
     methods: {
         scrollToHeading(id) {
-            const element = document.getElementById(id)
-            if (element) {
-                const header = document.querySelector('.site-header')
-                const headerHeight = header ? header.offsetHeight : 0
-                const targetPosition = element.offsetTop - headerHeight - 20
-
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                })
-            }
+            this.$emit('navigate', id) // 改为触发父组件的事件
         }
     }
 }
@@ -84,6 +74,8 @@ export default {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid #eef0f3;
         backdrop-filter: blur(10px);
+        backface-visibility: hidden;
+        transform: translateZ(0);
 
         &:hover {
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);

@@ -1,8 +1,7 @@
 <template>
-    <footer class="article-footer">
+    <footer class="article-footer" :class="theme">
         <!-- 版权声明提示 -->
         <CopyrightNotice :article="article" />
-
         <!-- 标签部分 -->
         <div class="tags-section">
             <i class="fas fa-tags"></i>
@@ -31,28 +30,30 @@
         </div>
     </footer>
 </template>
-  
-  <script>
+
+<script setup>
+import { inject } from 'vue'
 import CopyrightNotice from './CopyrightNotice.vue'
 
-export default {
-    name: 'ArticleFooter',
-    components: {
-        CopyrightNotice
-    },
-    props: {
-        article: {
-            type: Object,
-            required: true
-        }
+const props = defineProps({
+    article: {
+        type: Object,
+        required: true
     }
-}
+})
+
+defineEmits(['toggle-like'])
+
+const theme = inject('theme')
 </script>
-  
-  <style lang="scss" scoped>
+
+<style lang="scss" scoped>
 .article-footer {
     padding: 32px;
-    border-top: 1px solid #e8e8e8;
+    margin-top: -50px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-color);
+    transition: all 0.3s ease;
 
     @media (max-width: 768px) {
         padding: 12px;
@@ -65,7 +66,7 @@ export default {
         margin-bottom: 32px;
 
         i {
-            color: #409eff;
+            color: var(--primary-color);
         }
 
         .tags-list {
@@ -76,15 +77,15 @@ export default {
 
         .tag-item {
             padding: 8px 16px;
-            background: #f5f7fa;
-            color: #666666;
+            background: var(--tag-bg-color);
+            color: var(--tag-text-color);
             border-radius: 24px;
             font-size: 0.9em;
             text-decoration: none;
             transition: all 0.3s ease;
 
             &:hover {
-                background: #409eff;
+                background: var(--primary-color);
                 color: white;
                 transform: translateY(-2px);
             }
@@ -109,11 +110,11 @@ export default {
             transition: all 0.3s ease;
 
             &.like {
-                background: #f5f7fa;
-                color: #666666;
+                background: var(--button-bg-color);
+                color: var(--button-text-color);
 
                 &.active {
-                    background: #409eff;
+                    background: var(--primary-color);
                     color: white;
                 }
 
@@ -122,6 +123,20 @@ export default {
                 }
             }
         }
+    }
+
+    &.dark {
+        --tag-bg-color: rgba(255, 255, 255, 0.1);
+        --tag-text-color: rgba(255, 255, 255, 0.8);
+        --button-bg-color: rgba(255, 255, 255, 0.1);
+        --button-text-color: rgba(255, 255, 255, 0.8);
+    }
+
+    &.light {
+        --tag-bg-color: #f5f7fa;
+        --tag-text-color: #666666;
+        --button-bg-color: #f5f7fa;
+        --button-text-color: #666666;
     }
 }
 </style>

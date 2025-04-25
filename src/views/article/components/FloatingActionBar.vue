@@ -125,7 +125,7 @@ export default {
     gap: 24px;
     padding: 12px;
     border-radius: 12px;
-    z-index: 100;
+    z-index: 1000;
     transition: left 0.3s ease;
 
     @media (max-width: 1024px) {
