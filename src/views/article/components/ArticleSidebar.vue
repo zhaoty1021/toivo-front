@@ -1,17 +1,24 @@
 <template>
-    <aside v-if="showSidebar" class="article-sidebar desktop-only">
+    <aside
+        v-if="showSidebar"
+        class="article-sidebar desktop-only"
+        :class="theme"
+    >
         <div class="toc-container">
             <div class="toc-header">
                 <div class="title-wrapper">
-                    <i class="fas fa-list"></i>
-                    <span>目录</span>
+                    <i class="icon-global-nav"></i>
+                    <span>文章导航</span>
                 </div>
                 <div
-                    class="progress-wrapper"
+                    class="progress-indicator"
                     :class="{ completed: readProgress === 100 }"
                 >
-                    <i class="fas fa-book-reader"></i>
-                    <span class="progress-text">{{ readProgress }}</span>
+                    <div
+                        class="progress-bar"
+                        :style="{ width: `${readProgress}%` }"
+                    ></div>
+                    <span class="progress-text">{{ readProgress }}%</span>
                 </div>
             </div>
             <div class="toc-content">
@@ -23,276 +30,278 @@
                         active: activeHeading === item.id,
                         [`level-${item.level}`]: true
                     }"
-                    :style="{ paddingLeft: `${16 + (item.level - 1) * 12}px` }"
                     @click="scrollToHeading(item.id)"
                 >
-                    {{ item.text }}
+                    <div class="item-content">
+                        <span class="item-icon"></span>
+                        <span class="item-text">{{ item.text }}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </aside>
 </template>
-  
-<script>
-export default {
-    name: 'ArticleSidebar',
-    props: {
-        showSidebar: {
-            type: Boolean,
-            default: true
-        },
-        tocItems: {
-            type: Array,
-            default: () => []
-        },
-        readProgress: {
-            type: Number,
-            default: 0
-        },
-        activeHeading: {
-            type: String,
-            default: ''
-        }
+
+<script setup>
+import { inject } from 'vue'
+
+const props = defineProps({
+    showSidebar: {
+        type: Boolean,
+        default: true
     },
-    methods: {
-        scrollToHeading(id) {
-            this.$emit('navigate', id) // 改为触发父组件的事件
-        }
+    tocItems: {
+        type: Array,
+        default: () => []
+    },
+    readProgress: {
+        type: Number,
+        default: 0
+    },
+    activeHeading: {
+        type: String,
+        default: ''
     }
+})
+
+const theme = inject('theme', 'dark')
+const emit = defineEmits(['navigate'])
+
+const scrollToHeading = (id) => {
+    emit('navigate', id)
 }
 </script>
-  
+
 <style lang="scss" scoped>
 .article-sidebar {
+    --primary-color: #00f0ff;
+    --accent-color: #ff2d75;
+    --success-color: #00e676;
+    --dark-bg: #0d1117;
+    --card-bg: rgba(20, 28, 42, 0.95);
+    --text-color: #e6edf3;
+    --text-muted: #7d8590;
+    --border-color: rgba(0, 240, 255, 0.15);
+    --highlight-color: rgba(0, 240, 255, 0.1);
+    --spacing-xl: 24px;
+    --spacing-lg: 20px;
+    --spacing-md: 30px;
+    --spacing-sm: 12px;
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    width: 400px;
+    margin-right: -50px;
+
     .toc-container {
         position: sticky;
-        top: 90px;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        top: 100px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid #eef0f3;
-        backdrop-filter: blur(10px);
-        backface-visibility: hidden;
-        transform: translateZ(0);
+        transition: var(--transition);
+        backdrop-filter: blur(16px);
 
         &:hover {
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 12px 40px rgba(0, 240, 255, 0.2);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+    }
 
-            &::before {
-                opacity: 1;
+    .toc-header {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), transparent);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        border-bottom: 1px solid var(--border-color);
+
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+
+            i {
+                font-size: 20px;
+                color: var(--primary-color);
             }
         }
 
-        &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                45deg,
-                transparent,
-                rgba(74, 144, 226, 0.03),
-                transparent
-            );
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .progress-indicator {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+            margin-top: var(--spacing-sm);
+
+            &.completed {
+                .progress-bar {
+                    background: var(--success-color);
+                }
+            }
+
+            .progress-bar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                background: var(--primary-color);
+                transition: width 0.6s ease;
+            }
+
+            .progress-text {
+                position: absolute;
+                right: 0;
+                top: -20px;
+                font-size: 12px;
+                color: var(--text-muted);
+                font-variant-numeric: tabular-nums;
+            }
+        }
+    }
+
+    .toc-content {
+        padding: var(--spacing-md) var(--spacing-xl);
+        max-height: calc(100vh - 220px);
+        overflow-y: auto;
+
+        .toc-item {
+            margin: var(--spacing-sm) 0;
+            padding: var(--spacing-sm) 0;
+            cursor: pointer;
+            transition: var(--transition);
+
+            .item-content {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
+            }
+
+            .item-icon {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--text-muted);
+                transition: var(--transition);
+            }
+
+            .item-text {
+                color: var(--text-muted);
+                font-size: 15px;
+                transition: var(--transition);
+                line-height: 1.5;
+            }
+
+            &:hover {
+                .item-icon {
+                    background: var(--primary-color);
+                    box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+                }
+                .item-text {
+                    color: var(--text-color);
+                    transform: translateX(4px);
+                }
+            }
+
+            &.active {
+                .item-icon {
+                    background: var(--primary-color);
+                    box-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+                    transform: scale(1.2);
+                }
+                .item-text {
+                    color: var(--primary-color);
+                    font-weight: 500;
+                    transform: translateX(6px);
+                }
+            }
+
+            &.level-1 {
+                .item-text {
+                    font-size: 20px;
+                    font-weight: 500;
+                }
+            }
+
+            &.level-2 {
+                margin-left: var(--spacing-md);
+                .item-text {
+                    font-size: 19px;
+                    font-weight: 200;
+                }
+            }
+
+            &.level-3 {
+                margin-left: calc(var(--spacing-md) * 1.5);
+                .item-text {
+                    font-size: 18px;
+                }
+            }
+
+            &.level-3 {
+                margin-left: calc(var(--spacing-md) * 1.7);
+                .item-text {
+                    font-size: 17px;
+                }
+            }
+        }
+    }
+
+    // 亮色主题
+    &.light {
+        --primary-color: #0066ff;
+        --accent-color: #ff3d71;
+        --success-color: #00c853;
+        --dark-bg: #f8fafc;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --text-color: #1a1a1a;
+        --text-muted: #666666;
+        --border-color: rgba(0, 0, 0, 0.08);
+
+        .toc-container {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+            &:hover {
+                box-shadow: 0 12px 40px rgba(0, 102, 255, 0.15);
+                border-color: rgba(0, 102, 255, 0.2);
+            }
         }
 
         .toc-header {
-            padding: 16px;
-            background: #f9fafb;
-            color: #1f2937;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            border-bottom: 1px solid #eef0f3;
-            justify-content: space-between;
-
-            .title-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-
-                i {
-                    color: #4a90e2;
-                    font-size: 1.1em;
-                    transform-origin: center;
-                }
-            }
-
-            .progress-wrapper {
-                font-size: 0.9em;
-                color: #6b7280;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                padding: 4px 8px;
-                background: rgba(74, 144, 226, 0.05);
-                border-radius: 12px;
-                transition: all 0.3s ease;
-
-                &.completed {
-                    background: rgba(16, 185, 129, 0.1);
-                    color: #10b981;
-
-                    i {
-                        color: #10b981;
-                    }
-                }
-
-                i {
-                    color: #4a90e2;
-                    font-size: 0.9em;
-                }
-
-                .progress-text {
-                    font-variant-numeric: tabular-nums;
-                    min-width: 3em;
-                    text-align: right;
-
-                    &::after {
-                        content: '%';
-                        margin-left: 2px;
-                        opacity: 0.7;
-                    }
-                }
-            }
+            background: linear-gradient(
+                90deg,
+                rgba(0, 102, 255, 0.05),
+                transparent
+            );
         }
 
-        .toc-content {
-            padding: 16px;
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-            position: relative;
-
-            &::before {
-                content: '';
-                position: absolute;
-                left: 24px;
-                top: 0;
-                bottom: 0;
-                width: 1px;
-                background: linear-gradient(
-                    to bottom,
-                    transparent,
-                    rgba(74, 144, 226, 0.1),
-                    rgba(74, 144, 226, 0.1),
-                    transparent
-                );
-            }
-
-            .toc-item {
-                padding: 8px 12px;
-                margin: 2px 0;
-                cursor: pointer;
-                border-radius: 6px;
-                color: #6b7280;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                font-size: 0.95em;
-                line-height: 1.4;
-                position: relative;
-                display: flex;
-                align-items: center;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-
-                &::before {
-                    content: '';
-                    position: absolute;
-                    left: 0;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    width: 0;
-                    height: 0;
-                    background: #4a90e2;
-                    border-radius: 50%;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    opacity: 0;
-                    box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
-                }
-
-                &:hover {
-                    color: #4a90e2;
-                    background: linear-gradient(
-                        90deg,
-                        rgba(74, 144, 226, 0.05),
-                        rgba(74, 144, 226, 0.02)
-                    );
-                    transform: translateX(4px);
-
-                    &::before {
-                        width: 6px;
-                        height: 6px;
-                        opacity: 1;
-                    }
-                }
-
-                &.active {
-                    color: #4a90e2;
-                    background: linear-gradient(
-                        90deg,
-                        rgba(74, 144, 226, 0.1),
-                        rgba(74, 144, 226, 0.05)
-                    );
-                    font-weight: 500;
-                    transform: translateX(4px);
-
-                    &::before {
-                        width: 6px;
-                        height: 6px;
-                        opacity: 1;
-                        animation: tocDotPulse 1.5s infinite;
-                    }
-                }
-
-                &.level-1 {
-                    font-weight: 500;
-                    font-size: 1em;
-                }
-
-                &.level-2 {
-                    font-size: 0.95em;
-                }
-
-                &.level-3 {
-                    font-size: 0.9em;
-                }
-
-                &.level-4 {
-                    font-size: 0.88em;
-                }
-
-                &.level-5,
-                &.level-6 {
-                    font-size: 0.86em;
-                    opacity: 0.8;
-
-                    &:hover {
-                        opacity: 1;
-                    }
-                }
-            }
+        .progress-indicator {
+            background: rgba(0, 0, 0, 0.05);
         }
-    }
-}
-
-@keyframes tocDotPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 4px rgba(74, 144, 226, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(74, 144, 226, 0);
     }
 }
 
 // 响应式处理
+@media (max-width: 1200px) {
+    .article-sidebar {
+        width: 260px;
+        .toc-container {
+            .toc-header,
+            .toc-content {
+                padding-left: var(--spacing-lg);
+                padding-right: var(--spacing-lg);
+            }
+        }
+    }
+}
+
 @media (max-width: 1024px) {
     .desktop-only {
         display: none;

@@ -101,14 +101,40 @@ const initMarkdown = () => {
         highlight: (str, lang) => {
             const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext'
             try {
-                return `<pre class="hljs"><code>${
-                    hljs.highlight(str, { language }).value
-                }</code></pre>`
+                return `
+                  <div class="code-toolbar">
+                    <span class="language-label">${language}</span>
+                    <button class="copy-btn" onclick="this.classList.add('copied'); setTimeout(() => this.classList.remove('copied'), 2000); navigator.clipboard.writeText(\`${str.replace(
+                        /`/g,
+                        '\\`'
+                    )}\`)">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                      </svg>
+                    </button>
+                  </div>
+                  <code>${hljs.highlight(str, { language }).value}</code>
+                `
             } catch (err) {
                 console.error('代码高亮错误:', err)
-                return `<pre class="hljs"><code>${md.value.utils.escapeHtml(
-                    str
-                )}</code></pre>`
+                return `<div class="hljs-wrapper">
+                  <div class="code-toolbar">
+                    <span class="language-label">${language}</span>
+                    <button class="copy-btn" onclick="this.classList.add('copied'); setTimeout(() => this.classList.remove('copied'), 2000); navigator.clipboard.writeText(\`${str.replace(
+                        /`/g,
+                        '\\`'
+                    )}\`)">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                      </svg>
+                    </button>
+                  </div>
+                  <pre class="hljs"><code>${md.value.utils.escapeHtml(
+                      str
+                  )}</code></pre>
+                </div>`
             }
         }
     })
@@ -406,7 +432,6 @@ $glow-effect-light: 0 0 10px rgba(0, 102, 204, 0.5),
     font-size: 2.5em;
     margin: 40px 0 24px;
     color: var(--primary-color);
-    font-family: 'Orbitron', sans-serif;
     text-shadow: 0 0 10px var(--primary-color);
     position: relative;
     padding-bottom: 15px;
@@ -659,45 +684,198 @@ $glow-effect-light: 0 0 10px rgba(0, 102, 204, 0.5),
     border-radius: 2px;
     padding: 3px 6px;
     margin: 0 5px;
-    margin-bottom: 10px;
     font-family: 'Roboto Mono', monospace;
-    border: 1px solid var(--accent-color);
-    box-shadow: 0 0 5px var(--accent-color);
+    border: transparent 1px solid;
+    margin-top: -20px;
+    margin-bottom: -20px;
+}
+
+// 保持原有的折叠按钮样式
+:deep(.expand-button) {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--primary-color);
+    border-radius: 2px;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 3;
+    font-size: 0.9em;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-family: 'Roboto Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    &:hover {
+        background: rgba(0, 240, 255, 0.3);
+        color: #fff;
+        transform: translateX(-50%) translateY(-2px);
+        box-shadow: 0 0 10px var(--primary-color);
+    }
 }
 
 :deep(pre) {
     margin: 25px 0;
     position: relative;
-    background: #121420;
     border-radius: 0;
-    padding-top: 3em;
     overflow: hidden;
     max-height: 2000px;
     transition: max-height 0.4s ease-in-out;
     box-shadow: 0 0 20px var(--primary-color);
     border: 1px solid var(--border-color);
     font-family: 'Roboto Mono', monospace;
+    background: var(--bg-color);
 
-    &.collapsed {
-        max-height: 300px;
+    /* 新增的代码工具栏 */
+    .code-toolbar {
+        position: absolute;
+        top: 0.5em;
+        right: 1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 2;
+        height: 22px;
 
-        &::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: linear-gradient(transparent, #121420);
-            pointer-events: none;
-            z-index: 2;
+        .language-label {
+            font-size: 1em;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-family: 'Roboto Mono', monospace;
+            opacity: 0.9;
+            padding: 0.2em 0.5em;
+            background: rgba(0, 240, 255, 0.1);
+            border-radius: 2px;
+            margin-right: 1em;
         }
 
-        .expand-button {
-            display: flex !important;
+        .copy-btn {
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            svg {
+                width: 12px;
+                height: 12px;
+            }
+
+            &:hover {
+                background: rgba(0, 240, 255, 0.3);
+            }
+
+            &.copied {
+                background: var(--accent-color);
+                color: #000;
+            }
         }
     }
 
+    /* 保持原有终端样式 */
+    &::after {
+        content: 'TERMINAL';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2em;
+        background: linear-gradient(
+            to right,
+            rgba(0, 240, 255, 0.2),
+            rgba(0, 240, 255, 0.1)
+        );
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        padding-left: 1em;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.9em;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* 保持原有控制按钮 */
+    .terminal-controls {
+        position: absolute;
+        top: 0.8em;
+        right: 4em;
+        display: flex;
+        gap: 0.5em;
+        z-index: 2;
+
+        span {
+            display: block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+
+            &:nth-child(1) {
+                background: #ff5f56;
+            }
+
+            &:nth-child(2) {
+                background: #ffbd2e;
+            }
+
+            &:nth-child(3) {
+                background: #27c93f;
+            }
+        }
+    }
+
+    /* 保持原有代码内容样式 */
+    code {
+        display: block;
+        margin: 0;
+        overflow-x: auto;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        background: transparent !important;
+    }
+
+    /* 保持原有扫描线效果 */
+    .scanline {
+        position: absolute;
+        top: 2em;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(0, 240, 255, 0.5);
+        animation: scanline 5s linear infinite;
+        pointer-events: none;
+    }
+
+    /* 保持原有网格背景 */
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(var(--grid-color) 50%, transparent 50%);
+        background-size: 100% 4px;
+        pointer-events: none;
+        opacity: 0.1;
+    }
+
+    /* 保持原有折叠按钮样式 */
     .expand-button {
         position: absolute;
         bottom: 15px;
@@ -727,132 +905,20 @@ $glow-effect-light: 0 0 10px rgba(0, 102, 204, 0.5),
         }
     }
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100%;
-        background: linear-gradient(var(--grid-color) 50%, transparent 50%);
-        background-size: 100% 4px;
-        pointer-events: none;
-        z-index: 1;
-        opacity: 0.3;
-    }
+    /* 保持原有折叠状态 */
+    &.collapsed {
+        max-height: 300px;
 
-    .scanline {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: rgba(0, 240, 255, 0.5);
-        animation: scanline 5s linear infinite;
-        pointer-events: none;
-        z-index: 2;
-    }
-
-    code {
-        display: block;
-        padding: 1.5em;
-        padding-left: 1em;
-        margin-left: 0;
-        overflow-x: auto;
-        font-family: 'Roboto Mono', monospace;
-        font-size: 14px;
-        line-height: 1.5;
-        position: relative;
-        z-index: 1;
-        background: transparent !important;
-    }
-
-    &::after {
-        content: 'TERMINAL';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2.5em;
-        background: linear-gradient(
-            to right,
-            rgba(0, 240, 255, 0.2),
-            rgba(0, 240, 255, 0.1)
-        );
-        color: var(--primary-color);
-        display: flex;
-        align-items: center;
-        padding-left: 1em;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 0.9em;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .terminal-controls {
-        position: absolute;
-        top: 0.5em;
-        right: 1em;
-        display: flex;
-        gap: 0.5em;
-        z-index: 2;
-
-        span {
-            display: block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-
-            &:nth-child(1) {
-                background: #ff5f56;
-            }
-
-            &:nth-child(2) {
-                background: #ffbd2e;
-            }
-
-            &:nth-child(3) {
-                background: #27c93f;
-            }
-        }
-    }
-
-    .code-header {
-        position: absolute;
-        top: 0.5em;
-        right: 4em;
-        z-index: 2;
-        opacity: 1;
-        transition: opacity 0.2s ease;
-    }
-
-    .copy-button {
-        padding: 4px 12px;
-        background: rgba(0, 240, 255, 0.1);
-        border: 1px solid var(--primary-color);
-        border-radius: 2px;
-        color: var(--text-color);
-        cursor: pointer;
-        font-size: 12px;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-family: 'Roboto Mono', monospace;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-
-        &:hover {
-            background: rgba(0, 240, 255, 0.3);
-            color: #fff;
-            box-shadow: 0 0 10px var(--primary-color);
-        }
-
-        &.copied {
-            background: var(--accent-color);
-            color: #000;
-            border-color: var(--accent-color);
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, #121420);
+            pointer-events: none;
+            z-index: 2;
         }
     }
 }

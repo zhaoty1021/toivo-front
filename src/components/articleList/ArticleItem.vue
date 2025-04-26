@@ -100,14 +100,6 @@
                                 article.author.nickname
                             }}</span>
                         </div>
-                        <div class="post-date">
-                            <i class="far fa-calendar"></i>
-                            {{ article.formatCreateTime }}
-                        </div>
-                        <div class="post-view">
-                            <i class="far fa-eye"></i>
-                            {{ article.quantity }}
-                        </div>
                     </div>
                     <div class="footer-right">
                         <n-tag

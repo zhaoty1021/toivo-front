@@ -1,6 +1,6 @@
 <template>
     <AHeader :article="article" />
-    <div class="article-page" v-loading="loading">
+    <div class="article-page" v-loading="loading" :class="theme">
         <!-- 添加固定操作栏 -->
         <FloatingActionBar
             :article="article"
@@ -71,6 +71,7 @@ import { getArticleDetailApi, likeArticleApi } from '@/api/article'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
 import Comment from '@/components/Comment/index.vue'
+import { inject } from 'vue'
 
 import ArticleHeader from './components/ArticleHeader.vue'
 import ArticleContent from './components/ArticleContent.vue'
@@ -79,6 +80,7 @@ import ArticleSidebar from './components/ArticleSidebar.vue'
 import FloatingActionBar from './components/FloatingActionBar.vue'
 import AISummary from './components/AISummary.vue'
 import AHeader from './components/header.vue'
+import themeLight from 'naive-ui/es/float-button-group/styles/light'
 
 export default {
     name: 'Article',
@@ -99,7 +101,7 @@ export default {
                 cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
                 createTime: '2023-10-01 12:00:00',
                 content:
-                    '# 测试\n## 测试\n这就是我的测试内容\n ### 测试\n\n+ 测试内容\n+ 测试内容\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
+                    '# 测试\n## 测试\n这就是我的测试\n ### 测试\n\n+ 测试内容\n+ 测试内容\n+ 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```\n\n## ces',
                 category: {},
                 isOriginal: true,
                 readType: 1,
@@ -126,7 +128,8 @@ export default {
             showPaymentDialog: false,
             showMembershipDialog: false,
             isAiDescriptionExpanded: true,
-            contentRendered: false
+            contentRendered: false,
+            theme: inject('theme')
         }
     },
     computed: {
@@ -173,7 +176,7 @@ export default {
                     cover: 'http://124.70.85.121:9000/t-blog/cover/371476.png',
                     createTime: '2023-10-01 12:00:00',
                     content:
-                        '# 测试\n## 测试\n这就是我的测试内容\n ### 测试\n\n1. 测试内容\n测试内容\n3. 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```',
+                        '# 测试\n## 测试\n这就是我的测试内容\n ### 测试\n\n1. 测试内容\n测试内容\n3. 测试内容\n > 121 \n```java\n public static void main(String[] args) {\n     System.out.println("Hello World");\n }\n ```\n\n ```python\nprint("Hello World")\n```\n\n## ces',
                     category: {},
                     isOriginal: true,
                     readType: 1,
@@ -470,20 +473,45 @@ export default {
 }
 </script>
   
-  <style lang="scss" scoped>
+<style lang="scss" scoped>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400;500;700&display=swap');
+
 .article-page {
     max-width: 1300px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 12px;
 
     @media (max-width: 768px) {
         padding: 12px;
     }
+    --primary-color: #00f0ff;
+    --secondary-color: #ff00f0;
+    --accent-color: #00ff9d;
+    --bg-color: #0a0a12;
+    --text-color: #e0e0ff;
+    --border-color: rgba(0, 240, 255, 0.3);
+    --grid-color: rgba(0, 240, 255, 0.1);
+    --card-bg: rgba(20, 28, 42, 0.6);
+
+    margin: 2rem 0;
+    font-family: 'Roboto Mono', monospace;
+    position: relative;
+
+    &.light {
+        --primary-color: #0066cc;
+        --secondary-color: #cc00ff;
+        --accent-color: #00aa66;
+        --bg-color: #f8f9fa;
+        --text-color: #333344;
+        --border-color: rgba(0, 102, 204, 0.3);
+        --grid-color: rgba(0, 102, 204, 0.1);
+        --card-bg: rgba(248, 249, 250, 0.8);
+    }
 }
 
 .content-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
+    display: flex;
+    margin-top: -10px;
     gap: 32px;
     transition: all 0.3s ease;
 
@@ -501,7 +529,9 @@ export default {
 }
 
 .article-main {
-    background: #ffffff;
+    background: var(--bg-color);
+    width: 80%;
+    margin-left: 70px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;

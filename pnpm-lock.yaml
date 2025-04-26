@@ -32,6 +32,9 @@ importers:
       katex:
         specifier: ^0.16.22
         version: 0.16.22
+      lucide-vue-next:
+        specifier: ^0.503.0
+        version: 0.503.0(vue@3.5.12)
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
@@ -1330,6 +1333,11 @@ packages:
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+
+  lucide-vue-next@0.503.0:
+    resolution: {integrity: sha512-3MrtHIBdh4dPCUZDLxQnvmQ17UzUnBYgezUSIo87Laais8hOz6qIPllp0iG/uS/UIzk7bJxyZRzoZTW/gLSr4A==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   magic-string@0.30.12:
     resolution: {integrity: sha512-Ea8I3sQMVXr8JhN4z+H/d8zwo+tYDgHE9+5G4Wnrwhs0gaK9fXTKx0Tw5Xwsd/bCPTTZNRAdpyzvoeORe9LYpw==}
@@ -3249,6 +3257,10 @@ snapshots:
       lodash-es: 4.17.21
 
   lodash@4.17.21: {}
+
+  lucide-vue-next@0.503.0(vue@3.5.12):
+    dependencies:
+      vue: 3.5.12
 
   magic-string@0.30.12:
     dependencies:

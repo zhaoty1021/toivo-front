@@ -3,7 +3,6 @@
     <Login />
     <Search />
     <SideTool />
-    <SideNavBar />
     <Notice />
     <Loading />
     <metainfo></metainfo>

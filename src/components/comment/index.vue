@@ -1,77 +1,67 @@
 <template>
     <div class="comment-container" :class="theme" v-loading="loading">
-        <!-- Comment Input Area -->
-        <div class="comment-input-area">
-            <div class="avatar-wrapper">
-                <img
-                    v-if="user"
-                    :src="user.avatar"
-                    alt="User Avatar"
-                    class="user-avatar"
-                />
-                <img
-                    v-else
-                    :src="proxy.$setting.touristAvatar"
-                    alt="Guest Avatar"
-                    class="user-avatar"
-                />
-            </div>
+        <!-- 输入区域 -->
+        <div class="comment-input">
             <div class="input-wrapper">
-                <div
-                    id="textarea"
-                    ref="textareaRef"
-                    contenteditable="true"
-                    @input="onInput"
-                    @paste="optimizePasteEvent"
-                    data-placeholder="Leave a comment..."
-                    class="comment-textarea"
-                ></div>
-                <div class="comment-controls">
-                    <button
-                        @click.stop="chooseEmoji = !chooseEmoji"
-                        class="emoji-btn"
-                        aria-label="Insert emoji"
-                    >
-                        <i class="iconfont icon-biaoqing"></i>
-                    </button>
-                    <button
-                        @click="addComment"
-                        class="submit-btn"
-                        aria-label="Submit comment"
-                    >
-                        Submit
-                    </button>
+                <div class="avatar-container">
+                    <el-avatar v-if="user" :src="user.avatar" size="default" />
+                    <el-avatar
+                        v-else
+                        :src="proxy.$setting.touristAvatar"
+                        size="default"
+                    />
                 </div>
-                <div class="emoji-dropdown" v-show="chooseEmoji">
-                    <Emoji @chooseEmoji="handleChooseEmoji" />
+                <div class="editor-container">
+                    <div
+                        ref="textareaRef"
+                        contenteditable="true"
+                        @input="onInput"
+                        @paste="optimizePasteEvent"
+                        data-placeholder="分享你的想法..."
+                        class="comment-editor"
+                    ></div>
+                    <div class="editor-controls">
+                        <button
+                            @click.stop="chooseEmoji = !chooseEmoji"
+                            class="control-btn"
+                        >
+                            <i class="iconfont icon-biaoqing"></i>
+                            <span>表情</span>
+                        </button>
+                        <div class="emoji-picker" v-show="chooseEmoji">
+                            <Emoji @chooseEmoji="handleChooseEmoji" />
+                        </div>
+                        <button @click="addComment" class="submit-btn">
+                            <span>发布评论</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Comment List -->
-        <div class="comment-list" v-if="commentList.length > 0">
+        <!-- 评论列表 -->
+        <div class="comment-list">
+            <div v-if="commentList.length === 0" class="empty-comment">
+                <div class="empty-icon">
+                    <i class="iconfont icon-comment"></i>
+                </div>
+                <p>还没有评论，快来抢沙发~</p>
+            </div>
+
             <div
                 v-for="(item, index) in commentList"
                 :key="index"
                 class="comment-item"
-                ref="commentBoxref"
             >
-                <!-- Main Comment -->
-                <div
-                    class="comment-content"
-                    @mouseenter="item.showReplyBtn = true"
-                    @mouseleave="item.showReplyBtn = false"
-                >
+                <!-- 主评论 -->
+                <div class="comment-main">
                     <div class="comment-avatar">
-                        <el-avatar
-                            :src="item.avatar"
-                            size="default"
-                        ></el-avatar>
+                        <el-avatar :src="item.avatar" size="default" />
                     </div>
-                    <div class="comment-body">
+                    <div class="comment-content">
                         <div class="comment-header">
                             <div class="user-info">
-                                <h4 class="username">
+                                <h3 class="username">
                                     <a
                                         :href="item.webSite"
                                         target="_blank"
@@ -83,33 +73,32 @@
                                         v-if="
                                             item.userId == props.articleUserId
                                         "
-                                        class="author-badge"
-                                        >Author</span
+                                        class="author-tag"
+                                        >作者</span
                                     >
-                                </h4>
-                                <span class="comment-meta">
-                                    <time datetime="item.createTime">{{
+                                </h3>
+                                <div class="meta-info">
+                                    <time class="time">{{
                                         item.createTimeStr
                                     }}</time>
-                                    <span class="device-info">
+                                    <span class="device">
                                         <svg-icon :name="item.browser" />
-                                        {{ item.browserVersion }} ·
-                                        <svg-icon :name="item.system" />
-                                        {{ item.systemVersion }}
+                                        {{ item.browserVersion }}
                                     </span>
-                                    <span class="location-info">{{
-                                        splitIpAddress(item.ipAddress)
-                                    }}</span>
-                                </span>
+                                    <span class="location">
+                                        <svg-icon name="location" />
+                                        {{ splitIpAddress(item.ipAddress) }}
+                                    </span>
+                                </div>
                             </div>
                             <button
-                                v-show="item.showReplyBtn"
                                 @click="
                                     replyComment(item, item.id, false, index)
                                 "
                                 class="reply-btn"
                             >
-                                Reply
+                                <i class="iconfont icon-reply"></i>
+                                <span>回复</span>
                             </button>
                         </div>
 
@@ -117,7 +106,7 @@
                             <p v-html="item.content"></p>
                         </div>
 
-                        <!-- Reply Box -->
+                        <!-- 回复框 -->
                         <Reply
                             ref="replyRef"
                             @reloadReply="reloadReply"
@@ -126,26 +115,24 @@
                     </div>
                 </div>
 
-                <!-- Nested Comments -->
+                <!-- 子评论 -->
                 <div
-                    class="nested-comments"
+                    class="comment-replies"
                     v-if="item.children && item.children.length > 0"
                 >
                     <div
-                        v-for="(childrenItem, childerenIndex) in item.children"
-                        :key="childerenIndex"
-                        class="nested-comment-item"
-                        @mouseenter="childrenItem.showReplyBtn = true"
-                        @mouseleave="childrenItem.showReplyBtn = false"
+                        v-for="(childrenItem, childIndex) in item.children"
+                        :key="childIndex"
+                        class="reply-item"
                     >
-                        <div class="comment-avatar">
+                        <div class="reply-avatar">
                             <el-avatar
                                 :src="childrenItem.avatar"
                                 size="default"
-                            ></el-avatar>
+                            />
                         </div>
-                        <div class="comment-body">
-                            <div class="comment-header">
+                        <div class="reply-content">
+                            <div class="reply-header">
                                 <div class="user-info">
                                     <h4 class="username">
                                         <a
@@ -160,36 +147,23 @@
                                                 childrenItem.userId ==
                                                 props.articleUserId
                                             "
-                                            class="author-badge"
-                                            >Author</span
+                                            class="author-tag"
+                                            >作者</span
                                         >
                                     </h4>
-                                    <span class="comment-meta">
-                                        <time
-                                            datetime="childrenItem.createTime"
-                                            >{{
-                                                childrenItem.createTimeStr
-                                            }}</time
-                                        >
-                                        <span class="device-info">
+                                    <div class="meta-info">
+                                        <time class="time">{{
+                                            childrenItem.createTimeStr
+                                        }}</time>
+                                        <span class="device">
                                             <svg-icon
                                                 :name="childrenItem.browser"
                                             />
-                                            {{ childrenItem.browserVersion }} ·
-                                            <svg-icon
-                                                :name="childrenItem.system"
-                                            />
-                                            {{ childrenItem.systemVersion }}
+                                            {{ childrenItem.browserVersion }}
                                         </span>
-                                        <span class="location-info">{{
-                                            splitIpAddress(
-                                                childrenItem.ipAddress
-                                            )
-                                        }}</span>
-                                    </span>
+                                    </div>
                                 </div>
                                 <button
-                                    v-show="childrenItem.showReplyBtn"
                                     @click="
                                         replyComment(
                                             childrenItem,
@@ -199,20 +173,21 @@
                                     "
                                     class="reply-btn"
                                 >
-                                    Reply
+                                    <i class="iconfont icon-reply"></i>
+                                    <span>回复</span>
                                 </button>
                             </div>
 
-                            <div class="comment-text markdown-body">
+                            <div class="reply-text">
                                 <p>
-                                    <a class="reply-mention"
+                                    <a class="mention"
                                         >@{{ childrenItem.replyNickname }}</a
                                     >
                                     <span v-html="childrenItem.content"></span>
                                 </p>
                             </div>
 
-                            <!-- Nested Reply Box -->
+                            <!-- 嵌套回复框 -->
                             <Reply
                                 ref="replyRefs"
                                 @reloadReply="reloadReply"
@@ -224,13 +199,8 @@
             </div>
         </div>
 
-        <!-- Empty State -->
-        <div class="empty-state" v-else>
-            <p>Be the first to comment</p>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination-container" v-if="pages > 1">
+        <!-- 分页 -->
+        <div class="pagination" v-if="pages > 1">
             <sy-pagination
                 :pageNo="pageData.pageNo"
                 :pages="pages"
@@ -239,344 +209,8 @@
         </div>
     </div>
 </template>
-  
-  <style lang="scss">
-.comment-container {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-        Ubuntu, Cantarell, 'Open Sans', sans-serif;
-    max-width: 100%;
 
-    &.dark {
-        --bg-color: #0a0a12;
-        --card-bg: #0a0a12;
-        --text-color: #e4e4e4;
-        --text-secondary: #aaaaaa;
-        --text-tertiary: #888888;
-        --border-color: #3a3a3a;
-        --primary-color: #3b82f6;
-        --primary-hover: #60a5fa;
-        --success-color: #10b981;
-    }
-
-    &.light {
-        --bg-color: #ffffff;
-        --card-bg: #f7f7f7;
-        --text-color: #333333;
-        --text-secondary: #666666;
-        --text-tertiary: #999999;
-        --border-color: #e5e5e5;
-        --primary-color: #3b82f6;
-        --primary-hover: #60a5fa;
-        --success-color: #10b981;
-    }
-
-    /* Comment Input Area */
-    .comment-input-area {
-        display: flex;
-        margin-bottom: 24px;
-        background-color: var(--card-bg);
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-        .avatar-wrapper {
-            margin-right: 16px;
-
-            .user-avatar {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                object-fit: cover;
-            }
-        }
-
-        .input-wrapper {
-            flex: 1;
-            position: relative;
-
-            .comment-textarea {
-                min-height: 100px;
-                padding: 12px;
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                font-size: 14px;
-                color: var(--text-color);
-                background-color: var(--bg-color);
-                transition: border-color 0.2s, box-shadow 0.2s;
-                margin-bottom: 12px;
-                line-height: 1.5;
-                outline: none;
-
-                &:focus {
-                    border-color: var(--primary-color);
-                    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-                }
-
-                &:empty:before {
-                    content: attr(data-placeholder);
-                    color: var(--text-tertiary);
-                    pointer-events: none;
-                }
-
-                img {
-                    max-height: 20px;
-                    vertical-align: middle;
-                }
-            }
-
-            .comment-controls {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                .emoji-btn {
-                    background: none;
-                    border: none;
-                    color: var(--text-secondary);
-                    font-size: 18px;
-                    cursor: pointer;
-                    padding: 6px 10px;
-                    border-radius: 6px;
-                    transition: all 0.2s;
-
-                    &:hover {
-                        color: var(--primary-color);
-                        background-color: rgba(59, 130, 246, 0.1);
-                    }
-                }
-
-                .submit-btn {
-                    background-color: var(--primary-color);
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-
-                    &:hover {
-                        background-color: var(--primary-hover);
-                    }
-                }
-            }
-
-            .emoji-dropdown {
-                position: absolute;
-                bottom: 40px;
-                left: 0;
-                background-color: var(--card-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 10;
-            }
-        }
-    }
-
-    /* Comment List */
-    .comment-list {
-        .comment-item {
-            margin-bottom: 20px;
-
-            .comment-content {
-                display: flex;
-                padding: 16px;
-                background-color: var(--card-bg);
-                border-radius: 12px;
-                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-
-                .comment-avatar {
-                    margin-right: 16px;
-
-                    .el-avatar {
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 50%;
-                    }
-                }
-
-                .comment-body {
-                    flex: 1;
-
-                    .comment-header {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: flex-start;
-                        margin-bottom: 8px;
-
-                        .user-info {
-                            .username {
-                                font-size: 15px;
-                                font-weight: 600;
-                                margin: 0 0 2px 0;
-
-                                a {
-                                    color: var(--text-color);
-                                    text-decoration: none;
-
-                                    &:hover {
-                                        color: var(--primary-color);
-                                    }
-                                }
-
-                                .author-badge {
-                                    display: inline-block;
-                                    background-color: var(--primary-color);
-                                    color: white;
-                                    font-size: 11px;
-                                    border-radius: 4px;
-                                    padding: 1px 6px;
-                                    margin-left: 6px;
-                                    font-weight: 500;
-                                    vertical-align: middle;
-                                }
-                            }
-
-                            .comment-meta {
-                                display: block;
-                                font-size: 12px;
-                                color: var(--text-tertiary);
-
-                                time {
-                                    margin-right: 8px;
-                                }
-
-                                .device-info {
-                                    margin-right: 8px;
-
-                                    svg-icon {
-                                        vertical-align: middle;
-                                    }
-                                }
-
-                                .location-info {
-                                    &:before {
-                                        content: '·';
-                                        margin-right: 4px;
-                                    }
-                                }
-                            }
-                        }
-
-                        .reply-btn {
-                            background-color: transparent;
-                            color: var(--primary-color);
-                            border: 1px solid var(--primary-color);
-                            padding: 4px 10px;
-                            border-radius: 4px;
-                            font-size: 12px;
-                            cursor: pointer;
-                            transition: all 0.2s;
-
-                            &:hover {
-                                background-color: rgba(59, 130, 246, 0.1);
-                            }
-                        }
-                    }
-
-                    .comment-text {
-                        font-size: 14px;
-                        line-height: 1.6;
-                        color: var(--text-color);
-                        margin-bottom: 12px;
-                        word-break: break-word;
-
-                        p {
-                            margin: 0;
-                        }
-
-                        img {
-                            max-width: 100%;
-                            vertical-align: middle;
-                        }
-
-                        .reply-mention {
-                            color: var(--primary-color);
-                            font-weight: 500;
-                            text-decoration: none;
-                            margin-right: 4px;
-                        }
-                    }
-                }
-            }
-
-            .nested-comments {
-                margin-left: 40px;
-                margin-top: 12px;
-                border-left: 2px solid var(--border-color);
-                padding-left: 16px;
-
-                .nested-comment-item {
-                    display: flex;
-                    padding: 12px;
-                    background-color: var(--card-bg);
-                    border-radius: 8px;
-                    margin-bottom: 12px;
-
-                    &:last-child {
-                        margin-bottom: 0;
-                    }
-
-                    .comment-avatar {
-                        margin-right: 12px;
-
-                        .el-avatar {
-                            width: 32px;
-                            height: 32px;
-                            border-radius: 50%;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 40px 0;
-        color: var(--text-tertiary);
-        font-size: 16px;
-    }
-
-    /* Pagination */
-    .pagination-container {
-        margin-top: 24px;
-        display: flex;
-        justify-content: center;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .comment-input-area {
-            flex-direction: column;
-            padding: 12px;
-
-            .avatar-wrapper {
-                margin-right: 0;
-                margin-bottom: 12px;
-                display: flex;
-                justify-content: center;
-            }
-        }
-
-        .comment-item .comment-content {
-            padding: 12px;
-
-            .comment-avatar {
-                margin-right: 12px;
-            }
-        }
-
-        .nested-comments {
-            margin-left: 24px !important;
-        }
-    }
-}
-</style>
-  
-  <script setup name='comment'>
+<script setup name='comment'>
 import { postComment, featchComments } from '@/api/comment'
 import { browserMatch } from '@/utils/index'
 import Reply from './Reply.vue'
@@ -788,3 +422,400 @@ function splitIpAddress(address) {
     return address.split('|')[1]
 }
 </script>
+
+
+<style lang="scss" scoped>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400;500;700&display=swap');
+
+.comment-container {
+    --primary-color: #00f0ff;
+    --secondary-color: #ff00f0;
+    --accent-color: #00ff9d;
+    --bg-color: #0a0a12;
+    --text-color: #e0e0ff;
+    --border-color: rgba(0, 240, 255, 0.3);
+    --grid-color: rgba(0, 240, 255, 0.1);
+    --card-bg: rgba(20, 28, 42, 0.6);
+
+    margin: 2rem 0;
+    font-family: 'Roboto Mono', monospace;
+    position: relative;
+
+    &.light {
+        --primary-color: #0066cc;
+        --secondary-color: #cc00ff;
+        --accent-color: #00aa66;
+        --bg-color: #f8f9fa;
+        --text-color: #333344;
+        --border-color: rgba(0, 102, 204, 0.3);
+        --grid-color: rgba(0, 102, 204, 0.1);
+        --card-bg: rgba(248, 249, 250, 0.8);
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(var(--grid-color) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        opacity: 0.1;
+        z-index: 0;
+    }
+}
+
+/* 输入区域 */
+.comment-input {
+    margin-bottom: 2rem;
+    margin: 2rem 2rem 0 2rem;
+
+    .input-wrapper {
+        display: flex;
+        gap: 1.25rem;
+        background: var(--bg-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+        backdrop-filter: blur(8px);
+        transition: all 0.3s ease;
+
+        &:hover {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+        }
+    }
+
+    .avatar-container {
+        .el-avatar {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+    }
+
+    .editor-container {
+        flex: 1;
+
+        .comment-editor {
+            min-height: 7.5rem;
+            max-height: 18.75rem;
+            padding: 1rem;
+            background: var(--bg-color);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            line-height: 1.6;
+            outline: none;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+
+            &:focus {
+                border-color: var(--primary-color);
+                box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.2),
+                    0 0 15px rgba(0, 240, 255, 0.3);
+            }
+
+            &:empty:before {
+                content: attr(data-placeholder);
+                color: var(--text-color);
+                opacity: 0.6;
+            }
+        }
+
+        .editor-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+
+            .control-btn {
+                display: flex;
+                align-items: center;
+                background: transparent;
+                border: none;
+                color: var(--text-color);
+                font-size: 0.875rem;
+                font-weight: 500;
+                cursor: pointer;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                transition: all 0.3s ease;
+
+                i {
+                    margin-right: 0.5rem;
+                    font-size: 1.25rem;
+                }
+
+                &:hover {
+                    color: var(--primary-color);
+                    text-shadow: 0 0 5px var(--primary-color);
+                }
+            }
+
+            .submit-btn {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-color),
+                    var(--secondary-color)
+                );
+                color: white;
+                border: none;
+                padding: 0.625rem 1.75rem;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+                &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+                }
+            }
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 4.375rem;
+            left: 0;
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3),
+                0 0 20px var(--primary-color);
+            z-index: 10;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+    }
+}
+
+/* 评论列表 */
+.comment-list {
+    .empty-comment {
+        text-align: center;
+        padding: 3.75rem 0;
+        color: var(--text-color);
+        opacity: 0.6;
+
+        .empty-icon {
+            font-size: 3.75rem;
+            color: var(--primary-color);
+            margin-bottom: 1.25rem;
+            opacity: 0.8;
+        }
+    }
+
+    .comment-item {
+        background: var(--card-bg);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+        backdrop-filter: blur(8px);
+        transition: all 0.3s ease;
+
+        &:hover {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+        }
+
+        .comment-main {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+
+            .comment-avatar {
+                .el-avatar {
+                    border: 2px solid var(--primary-color);
+                    box-shadow: 0 0 15px var(--primary-color);
+                }
+            }
+
+            .comment-content {
+                flex: 1;
+
+                .comment-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 1rem;
+
+                    .user-info {
+                        .username {
+                            font-size: 1.125rem;
+                            font-weight: 600;
+                            margin: 0 0 0.375rem 0;
+                            color: var(--text-color);
+
+                            a {
+                                color: inherit;
+                                text-decoration: none;
+                                transition: all 0.3s ease;
+
+                                &:hover {
+                                    color: var(--primary-color);
+                                }
+                            }
+
+                            .author-tag {
+                                display: inline-block;
+                                background: linear-gradient(
+                                    to right,
+                                    var(--primary-color),
+                                    var(--secondary-color)
+                                );
+                                color: white;
+                                font-size: 0.75rem;
+                                border-radius: 0.25rem;
+                                padding: 0.125rem 0.625rem;
+                                margin-left: 0.625rem;
+                                font-weight: 600;
+                            }
+                        }
+
+                        .meta-info {
+                            display: flex;
+                            align-items: center;
+                            flex-wrap: wrap;
+                            font-size: 0.8125rem;
+                            color: var(--text-color);
+                            opacity: 0.7;
+
+                            .time {
+                                margin-right: 1rem;
+                            }
+
+                            .device,
+                            .location {
+                                display: flex;
+                                align-items: center;
+                                margin-right: 1rem;
+
+                                svg-icon {
+                                    margin-right: 0.375rem;
+                                }
+                            }
+                        }
+                    }
+
+                    .reply-btn {
+                        display: flex;
+                        align-items: center;
+                        background: transparent;
+                        color: var(--primary-color);
+                        border: 1px solid var(--primary-color);
+                        padding: 0.5rem 1rem;
+                        border-radius: 0.5rem;
+                        font-size: 0.875rem;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+
+                        i {
+                            margin-right: 0.5rem;
+                        }
+
+                        &:hover {
+                            background: rgba(0, 240, 255, 0.1);
+                        }
+                    }
+                }
+
+                .comment-text {
+                    font-size: 1rem;
+                    line-height: 1.7;
+                    color: var(--text-color);
+                    margin-bottom: 1.25rem;
+
+                    p {
+                        margin: 0;
+                    }
+
+                    img {
+                        max-width: 100%;
+                    }
+                }
+            }
+        }
+
+        .comment-replies {
+            margin-left: 4.75rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border-color);
+
+            .reply-item {
+                display: flex;
+                gap: 1.25rem;
+                padding: 1.25rem 0;
+                border-bottom: 1px dashed var(--border-color);
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                .reply-avatar {
+                    .el-avatar {
+                        border: 2px solid var(--accent-color);
+                        box-shadow: 0 0 15px var(--accent-color);
+                    }
+                }
+
+                .reply-content {
+                    flex: 1;
+
+                    .reply-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        margin-bottom: 0.5rem;
+                    }
+
+                    .reply-text {
+                        font-size: 0.9375rem;
+
+                        .mention {
+                            color: var(--primary-color);
+                            font-weight: 600;
+                            text-decoration: none;
+                            margin-right: 0.375rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 分页 */
+.pagination {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .comment-input .input-wrapper {
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+
+    .comment-item {
+        padding: 1.25rem;
+
+        .comment-main {
+            gap: 1rem;
+        }
+
+        .comment-replies {
+            margin-left: 3.5rem;
+            padding-left: 1rem;
+        }
+    }
+}
+</style>
