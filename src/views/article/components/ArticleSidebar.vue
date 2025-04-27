@@ -86,7 +86,7 @@ const scrollToHeading = (id) => {
     --spacing-xl: 24px;
     --spacing-lg: 20px;
     --spacing-md: 30px;
-    --spacing-sm: 12px;
+    --spacing-sm: 8px;
     --border-radius: 12px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
