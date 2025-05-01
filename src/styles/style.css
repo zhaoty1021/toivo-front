@@ -46,7 +46,7 @@ html[data-theme='dark'] {
     --background-color: #232323;
     --card-bg: rgba(255, 255, 255, 0.67);
     --card-border: #1DE9B6;
-    --body-color: #2b2b2b;
+    --body-color: linear-gradient(0deg, #1a1a2e 0%, #16213e 100%);
     --wave-color: #2b2b2b;
     --text-color: #909399;
     --text-color1: #fff;

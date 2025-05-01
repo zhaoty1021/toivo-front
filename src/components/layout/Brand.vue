@@ -1,201 +1,191 @@
 <template>
-  <div class="brand-container">
-    <div class="brand">
-      <!-- 打字机 -->
-      <div class="brand-text">
-        <div class="title">
-          {{obj.output}}
-          <span class="easy-typed-cursor">|</span>
+    <div class="brand-container" :class="theme">
+        <div class="brand">
+            <div class="typing-container">
+                <div class="typing-text">
+                    {{ displayText }}
+                    <span class="cursor" :class="{ blinking: isTyping }"
+                        >|</span
+                    >
+                </div>
+                <div class="subtitle">每日一句 · 灵感语录</div>
+            </div>
         </div>
-      </div>
+        <Wave />
     </div>
-    <!-- 波浪 -->
-    <Wave></Wave>
-  </div>
 </template>
+  
+  <script setup>
+import { ref, onMounted, inject } from 'vue'
+import Wave from '@/components/layout/Wave.vue'
 
-<script setup>
-
-import EasyTyper from "easy-typer-js";
-import { onMounted, reactive } from "vue";
-import Wave from "@/components/layout/Wave.vue";
-
+const theme = inject('theme')
+const displayText = ref('')
+const isTyping = ref(true)
 const obj = reactive({
-  output: "",
-  isEnd: false,
-  speed: 300,
-  singleBack: false,
-  sleep: 0,
-  type: "rollback",
-  backSpeed: 100,
-  sentencePause: false,
-});
+    output: '',
+    isEnd: false,
+    speed: 300,
+    singleBack: false,
+    sleep: 0,
+    type: 'rollback',
+    backSpeed: 100,
+    sentencePause: false
+})
 
-const scrollDown = () => {
-  window.scrollTo({
-    behavior: "smooth",
-    top: document.documentElement.clientHeight,
-  });
-};
+const defaultQuotes = [
+    '代码如诗，逻辑如画',
+    '科技创造未来',
+    '创新驱动发展',
+    '简洁是智慧的精华',
+    '持续学习，持续进步'
+]
 
 onMounted(() => {
-  fetchData();
-});
-let myYiYan = 'https://v1.hitokoto.cn/?c=i&encode=json'
+    fetchHitokoto()
+})
 
-const fetchData = () => {
-  fetch(myYiYan)
-      .then((res) => {
-        return res.json();
-      })
-      .then(({ hitokoto }) => {
-        new EasyTyper(
-            obj,
-            hitokoto,
-            () => {
-              fetchData()
-            },
-            () => { }
-        );
-      });
-};
+const startTyping = (text) => {
+    isTyping.value = true
+    typeWriter(text, 0)
+}
 
+const fetchHitokoto = async () => {
+    try {
+        const response = await fetch('https://v1.hitokoto.cn/?c=i&encode=json')
+        if (response.ok) {
+            const data = await response.json()
+            startTyping(data.hitokoto)
+        } else {
+            throw new Error('API请求失败')
+        }
+    } catch (error) {
+        console.error('使用本地语录:', error)
+        const randomQuote =
+            defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)]
+        startTyping(randomQuote)
+    }
+}
+
+const typeWriter = (text, i) => {
+    if (i < text.length) {
+        displayText.value = text.substring(0, i + 1)
+        setTimeout(() => typeWriter(text, i + 1), 100)
+    } else {
+        isTyping.value = false
+        setTimeout(() => {
+            deleteText(text, text.length)
+        }, 3000) // 显示3秒后开始删除
+    }
+}
+
+const deleteText = (text, i) => {
+    if (i > 0) {
+        displayText.value = text.substring(0, i - 1)
+        setTimeout(() => deleteText(text, i - 1), 50)
+    } else {
+        setTimeout(() => fetchHitokoto(), 1000) // 删除完成后重新获取新语录
+    }
+}
 </script>
-
-<style lang="scss" scoped>
-
+  
+  <style lang="scss" scoped>
 .brand-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  position: relative;
-  width: 100%;
-  height: 50vh;
-  min-height: 10rem;
-  color: var(--header-text-color);
+    --primary-color: #00f0ff;
+    --text-color: #ffffff;
+    --bg-color: #0a0a12;
+    --accent-color: #00ff9d;
+
+    position: relative;
+    width: 100%;
+    height: 55vh;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-color);
+    overflow: hidden;
+
+    &.light {
+        --bg-color: #f0f2f5;
+        --text-color: #333344;
+        --primary-color: #0066cc;
+        --accent-color: #00aa66;
+    }
 }
 
 .brand {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  position: absolute;
-  z-index: 2;
-  top: 20vh;
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+}
 
-  .artboard {
-    font-family: "Fredericka the Great", Mulish, -apple-system, "PingFang SC", "Microsoft YaHei",
-    sans-serif;
-    font-size: 4.5em;
+.typing-container {
+    display: inline-block;
+    max-width: 80%;
+    text-align: center;
+}
 
-    @media (max-width: 500px) {
-      font-size: 3em;
-      // 字体大小过渡效果
-      @keyframes titleScale {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-    }
-    line-height: 1.5;
-    animation: titleScale 1s;
-    color: white;
-    text-shadow: 0 1px 0 hsl(174, 5%, 80%), 0 2px 0 hsl(174, 5%, 75%),
-    0 3px 0 hsl(174, 5%, 70%), 0 4px 0 hsl(174, 5%, 66%),
-    0 5px 0 hsl(174, 5%, 64%), 0 6px 0 hsl(174, 5%, 62%),
-    0 7px 0 hsl(174, 5%, 61%), 0 8px 0 hsl(174, 5%, 60%),
-    0 0 5px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.2),
-    0 3px 5px rgba(0, 0, 0, 0.2), 0 5px 10px rgba(0, 0, 0, 0.2),
-    0 10px 10px rgba(0, 0, 0, 0.2), 0 20px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .brand-text{
-    // 白色半透明背景
-    background: rgba(255, 255, 255, 0.5);
-    padding: 0.5em;
-    border-radius: 0.5em;
-  }
-
-  .title {
-    letter-spacing: 0.1em;
-    background: linear-gradient(90deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.typing-text {
+    font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    font-size: 1.5rem;
-    @media (max-width: 500px) {
-      font-size: 1em;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--text-color);
+    text-shadow: 0 0 8px var(--primary-color);
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+}
+
+.cursor {
+    display: inline-block;
+    width: 0.15em;
+    height: 1em;
+    background: var(--accent-color);
+    vertical-align: middle;
+    margin-left: 0.1em;
+
+    &.blinking {
+        animation: blink 0.7s infinite;
     }
-    
-  }
 }
 
-.easy-typed-cursor {
-  opacity: 0;
-  -webkit-animation: blink 0.7s infinite;
-  -moz-animation: blink 0.7s infinite;
-  animation: blink 0.7s infinite;
-  background: linear-gradient(90deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  @media (max-width: 500px) {
-    font-size: 1em;
-  }
-}
-
-.arrow-down {
-  position: absolute;
-  bottom: 15vh;
-  -webkit-animation: arrow-shake 1.5s ease-out infinite;
-  animation: arrow-shake 1.5s ease-out infinite;
-  cursor: pointer;
-  z-index: 8;
-}
-
-@media (max-width: 767px) {
-  .brand-container {
-    padding: 3rem 0.5rem 0;
-  }
-}
-
-@media (min-width: 760px) {
-  .title {
-    font-size: 1.5rem;
-  }
-}
-
-@keyframes arrow-shake {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  30% {
-    opacity: 0.5;
-    transform: translateY(25px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.subtitle {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    animation: fadeIn 1s ease-out 1s forwards;
 }
 
 @keyframes blink {
-  0% {
-    opacity: 0;
-  }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
 
-  100% {
-    opacity: 1;
-  }
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .typing-text {
+        font-size: clamp(1.2rem, 5vw, 2rem);
+    }
+
+    .subtitle {
+        font-size: 0.7rem;
+    }
 }
 </style>

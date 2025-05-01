@@ -129,7 +129,8 @@ export default {
             showMembershipDialog: false,
             isAiDescriptionExpanded: true,
             contentRendered: false,
-            theme: inject('theme')
+            theme: inject('theme'),
+            scrollOffset: 80 // 新增：统一的滚动偏移量
         }
     },
     computed: {
@@ -358,38 +359,22 @@ export default {
 
         // 滚动到指定标题
         scrollToHeading(id) {
-            this.$nextTick(() => {
-                // 1. 使用IntersectionObserver的检测结果（而不是手动计算）
-                const observer = new IntersectionObserver(
-                    (entries) => {
-                        entries.forEach((entry) => {
-                            if (
-                                entry.isIntersecting &&
-                                entry.intersectionRatio > 0.3
-                            ) {
-                                // 找到正确位置后停止观察
-                                observer.disconnect()
-                            }
-                        })
-                    },
-                    {
-                        threshold: [0.3, 0.5, 0.7],
-                        rootMargin: `-${this.getDynamicOffset()}px 0px 0px 0px`
-                    }
-                )
+            const element = document.getElementById(id)
+            if (!element) return
 
-                // 2. 直接触发滚动（让浏览器处理精确位置）
-                const element = document.getElementById(id)
-                if (element) {
-                    element.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    })
+            // 计算精确的滚动位置
+            const elementRect = element.getBoundingClientRect()
+            const offsetPosition =
+                elementRect.top + window.pageYOffset - this.scrollOffset
 
-                    // 3. 开始观察（用于后续修正）
-                    observer.observe(element)
-                }
+            // 使用平滑滚动
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
             })
+
+            // 更新活动标题
+            this.activeHeading = id
         },
         getDynamicOffset() {
             // 动态计算偏移量（与手动滚动时相同逻辑）
