@@ -1,387 +1,394 @@
 <template>
-  <el-card class="box">
-    <img class="card-cover-img" src="@/assets/avatar.png" alt="" />
-    <div class="user">
-      <div class="avatar_wrapper">
-        <img src="@/assets/avatar.png" alt="" class="userAvatar" />
-        
-      </div>
-      <a class="username">
-        Tyrone
-        <el-tooltip
-          class="box-item"
-          effect="dark"
-          content="博主"
-          placement="right"
-        >
-          <svg-icon name="bozhu"></svg-icon>
-        </el-tooltip>
-      </a>
-      <span class="desc" :title="webInfo.authorInfo">
-        萤小宇，全干工程师
-      </span>
-      <div class="site-data">
-        <a href="/archive">
-          <div class="headline">文章</div>
-          <div class="count">12</div>
-        </a>
-        <a href="/category">
-          <div class="headline">分类</div>
-          <div class="count">12</div>
-        </a>
-        <a href="/tags">
-          <div class="headline">标签</div>
-          <div class="count">1</div>
-        </a>
-      </div>
-      <div class="lianxi">
-        <a class="hand-style" v-show="isShow(3)" :href="webInfo.github">
-          <svg-icon name="github" />
-        </a>
-        <a
-          v-show="isShow(4)"
-          class="gitee hand-style"
-          :href="webInfo.gitee"
-          target="_blank"
-          title="Gitee"
-          rel="noopener noreferrer nofollow"
-        >
-          <svg-icon name="gitee" />
-        </a>
-        <a
-          
-          class="qq hand-style"
-          :href="
-            '//wpa.qq.com/msgrd?v=3&amp;uin=' +
-            webInfo.qqNumber +
-            '&amp;site=qq&amp;menu=yes'
-          "
-          target="_blank"
-          title="QQ"
-          rel="noopener noreferrer nofollow"
-        >
-          <svg-icon name="qq" />
-        </a>
-        <a
-          
-          class="email hand-style"
-          href=""
-          target="_blank"
-          title="邮箱"
-          rel="noopener noreferrer nofollow"
-        >
-        <svg-icon name="email" />
-        </a>
-        <a
-          class="weibo hand-style"
-          href="https://weibo.com/u/5747542477"
-          target="_blank"
-          title="微博"
-          rel="noopener noreferrer nofollow"
-        >
-        <svg-icon name="weibo" />
-        </a>
-        <a
-          class="steam hand-style"
-          href="https://www.zhihu.com/people/he-he-85-83-34"
-          target="_blank"
-          title="Steam"
-          rel="noopener noreferrer nofollow"
-        >
-          <svg-icon name="steam" />
-        </a>
-        <a
-          class="juejin hand-style"
-          href="https://juejin.cn/user/4391861792808499/posts"
-          target="_blank"
-          title="稀土掘金"
-          rel="noopener noreferrer nofollow"
-        >
-          <svg-icon name="juejin" />
-        </a>
-      </div>
-      <!-- 收藏本站 -->
-      <div class="collect">
-        <el-button class="btn" @click="handleCollect">
-          <p>联系我</p>
-        </el-button>
-      </div>
-    </div>
-  </el-card>
+    <el-card class="box" :class="theme">
+        <div class="card-cover"></div>
+        <div class="user">
+            <div class="avatar_wrapper">
+                <img src="@/assets/avatar.png" alt="" class="userAvatar" />
+            </div>
+            <a class="username">
+                Tyrone
+                <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="博主"
+                    placement="right"
+                >
+                    <svg-icon name="bozhu"></svg-icon>
+                </el-tooltip>
+            </a>
+            <span class="desc" :title="webInfo.authorInfo">
+                萤小宇，全干工程师
+            </span>
+            <div class="site-data">
+                <a href="/archive">
+                    <div class="headline">文章</div>
+                    <div class="count">12</div>
+                </a>
+                <a href="/category">
+                    <div class="headline">分类</div>
+                    <div class="count">12</div>
+                </a>
+                <a href="/tags">
+                    <div class="headline">标签</div>
+                    <div class="count">1</div>
+                </a>
+            </div>
+            <div class="lianxi">
+                <a class="hand-style" v-show="isShow(3)" :href="webInfo.github">
+                    <svg-icon name="github" />
+                </a>
+                <a
+                    v-show="isShow(4)"
+                    class="gitee hand-style"
+                    :href="webInfo.gitee"
+                    target="_blank"
+                    title="Gitee"
+                    rel="noopener noreferrer nofollow"
+                >
+                    <svg-icon name="gitee" />
+                </a>
+                <a
+                    class="qq hand-style"
+                    :href="
+                        '//wpa.qq.com/msgrd?v=3&amp;uin=' +
+                        webInfo.qqNumber +
+                        '&amp;site=qq&amp;menu=yes'
+                    "
+                    target="_blank"
+                    title="QQ"
+                    rel="noopener noreferrer nofollow"
+                >
+                    <svg-icon name="qq" />
+                </a>
+                <a
+                    class="email hand-style"
+                    href=""
+                    target="_blank"
+                    title="邮箱"
+                    rel="noopener noreferrer nofollow"
+                >
+                    <svg-icon name="email" />
+                </a>
+                <a
+                    class="weibo hand-style"
+                    href="https://weibo.com/u/5747542477"
+                    target="_blank"
+                    title="微博"
+                    rel="noopener noreferrer nofollow"
+                >
+                    <svg-icon name="weibo" />
+                </a>
+                <a
+                    class="steam hand-style"
+                    href="https://www.zhihu.com/people/he-he-85-83-34"
+                    target="_blank"
+                    title="Steam"
+                    rel="noopener noreferrer nofollow"
+                >
+                    <svg-icon name="steam" />
+                </a>
+                <a
+                    class="juejin hand-style"
+                    href="https://juejin.cn/user/4391861792808499/posts"
+                    target="_blank"
+                    title="稀土掘金"
+                    rel="noopener noreferrer nofollow"
+                >
+                    <svg-icon name="juejin" />
+                </a>
+            </div>
+            <div class="collect">
+                <el-button class="btn" @click="handleCollect">
+                    <p>联系我</p>
+                </el-button>
+            </div>
+        </div>
+    </el-card>
 </template>
-<script setup name="site">
-import { useSiteStore } from "@/store/moudel/site.js";
-import SvgIcon from "@/components/SvgIcon.vue";
+  
+  <script setup name="site">
+import { ref, inject } from 'vue'
+import { useSiteStore } from '@/store/moudel/site.js'
+import SvgIcon from '@/components/SvgIcon.vue'
 
-const { proxy } = getCurrentInstance();
-const defaultSetting = ref(proxy.$setting);
-const siteStore = useSiteStore();
-const webInfo = ref(siteStore.getWebInfo);
+const { proxy } = getCurrentInstance()
+const theme = inject('theme')
+const defaultSetting = ref(proxy.$setting)
+const siteStore = useSiteStore()
+const webInfo = ref(siteStore.getWebInfo)
 
 function isShow(type) {
-  return webInfo.value.showList.indexOf(type) != -1;
+    return webInfo.value.showList.indexOf(type) != -1
 }
 function handleClike(val) {
-  window.location.href = val;
+    window.location.href = val
 }
 function handleCollect() {
-   proxy.$modal.msgSuccess("按CTRL+ D 键将本页加入书签!");
+    proxy.$modal.msgSuccess('按CTRL+ D 键将本页加入书签!')
 }
 </script>
-<style lang="scss" scoped>
-.box {
-  height: auto;
-  background-color: var(--background-color);
-  position: relative;
-  border-radius: 10px;
-  border: 2px solid var(--card-border); // 添加边框
-  box-shadow: 0 2px 12px 0 var(--border-line); // 添加阴影效果增强视觉
-  background: var(--card-bg);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 95px;
-    left: 0;
-    width: 100%;
-    height: 45%;
-    z-index: 2;
-    //background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
-  }
-  .card-cover {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    height: 160px;
-    top: -20%;
-    left: 0;
-    will-change: top;
-    background-size: cover;
-    background-position: center;
-    filter: blur(30px);
-    transform: scale(1.2);
-    transition: 0.5s;
-  }
-
-  .card-cover-img {
-    width: 100%;
-    height: 45%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    filter: blur(5px); // 添加模糊效果
-    transition: filter 0.3s ease; // 添加过渡效果，使模糊变化更平滑
-  }
-
-  .user {
-    padding: 45px 15px 15px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    flex-direction: column;
-
-    .avatar_wrapper {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      margin-bottom: 12px;
-
-      .userAvatar {
-        object-fit: cover;
-        position: absolute;
-        top: 0;
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        display: block;
-        overflow: hidden;
-        padding: 5px;
-        -o-object-fit: cover;
-        object-fit: cover;
-        transition: transform 0.5s;
-        z-index: 20;
-
-        &:hover {
-          transform: rotate(360deg);
-        }
-      }
-
-      .guajian {
-        z-index: 10;
-        position: absolute;
-        top: -20px;
-        right: -3px;
-      }
+  
+  <style lang="scss" scoped>
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
     }
-
-    .username {
-      color: var(--font-color);
-      display: block;
-      font-size: 20px;
-      font-weight: 500;
-      margin-bottom: 5px;
-      margin-top: 8px;
-
-      svg {
-        width: 18px;
-        height: 18px;
-        vertical-align: -3px;
-      }
+    50% {
+        transform: translateY(-5px);
     }
-
-    .desc {
-      font-size: 16px;
-      margin-top: 10px;
-      color: var(--font-color);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-      text-align: center;
-      background: radial-gradient(
-        circle at 49.86% 48.37%,
-        #0090ff 0,
-        #0089ff 3.33%,
-        #3a82ff 6.67%,
-        #717aff 10%,
-        #9371fb 13.33%,
-        #ae67ef 16.67%,
-        #c45de1 20%,
-        #d652d2 23.33%,
-        #e448c2 26.67%,
-        #ef3eb0 30%,
-        #f7369e 33.33%,
-        #fd318c 36.67%,
-        #ff317a 40%,
-        #ff3569 43.33%,
-        #fd3d57 46.67%,
-        #f94646 50%,
-        #f35035 53.33%,
-        #ea5a22 56.67%,
-        #e16308 60%,
-        #d56d00 63.33%,
-        #c97500 66.67%,
-        #bb7d00 70%,
-        #ac8300 73.33%,
-        #9d8900 76.67%,
-        #8c8f00 80%,
-        #7a9300 83.33%,
-        #669700 86.67%,
-        #4f9b00 90%,
-        #309e0e 93.33%,
-        #00a029 96.67%,
-        #00a23d 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .site-data {
-      margin: 14px 0 4px;
-      display: table;
-      width: 100%;
-      text-align: center;
-      a {
-        display: inline-block;
-        margin: 0 20px;
-        transition: all 0.5s;
-
-        &:hover {
-          transform: scale(1.2);
-        }
-        .headline {
-          color: var(--text-color);
-          font-size: 16px;
-        }
-        .count {
-          font-size: 16px;
-          color: var(--text-color);
-        }
-      }
-    }
-
-    .collect {
-      margin-top: 8px;
-      width: 100%;
-      
-      .btn {
-        background-color: transparent;
-        border-radius: 5px;
-        border: 2px solid var(--theme-color);
-        color: var(--theme-color);
-        padding: 10px 20px;
-        font-weight: 700;
-        position: relative;
-        transition: all 1s;
-        z-index: 1;
-        overflow: hidden;
-        height: 30px;
-        width: 100%;
-        line-height: 8px;
-
-        &:hover {
-          color: white;
-          animation: scaleUp 0.3s ease-in-out;
-
-          &::before {
-            width: 180%;
-          }
-        }
-
-        &::before {
-          content: "";
-          height: 100%;
-          position: absolute;
-          left: -30px;
-          top: 0;
-          background-color: var(--theme-color);
-          width: 0%;
-          transition: all 1s;
-          z-index: -1;
-        }
-      }
-    }
-
-    .lianxi {
-      border-top: 1px solid var(--border-line);
-      justify-content: space-around;
-      padding-top: 10px;
-      text-align: center;
-      align-items: center;
-      font-size: 14px;
-      display: flex;
-      margin-top: 6px;
-
-      a {
-        display: inline-block;
-        margin: 0 10px;
-        transition: all 0.5s;
-
-        &:hover {
-          transform: scale(1.2);
-        }
-
-        svg {
-          width: 24px;
-          height: 24px;
-        }
-        
-      }
-    }
-  }
 }
 
-@keyframes img {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
 
-  50% {
-    -webkit-transform: rotate(180deg);
-  }
+.box {
+    --primary-color: #00f0ff;
+    --secondary-color: #ff00f0;
+    --accent-color: #00ff9d;
+    --bg-color: #0a0a12;
+    --text-color: #ffffff;
+    --border-color: rgba(0, 240, 255, 0.3);
+    --border-line: rgba(0, 240, 255, 0.3);
+    --glow-effect: 0 0 10px rgba(0, 240, 255, 0.7);
+    --card-bg: rgba(30, 30, 60, 0.8);
+    --grid-color: rgba(0, 240, 255, 0.1);
 
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
+    height: 450px;
+    position: relative;
+    border-radius: 12px;
+    border: 1px solid var(--border-line);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: var(--bg-color);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: pulse 3s infinite alternate;
+
+    &.light {
+        --primary-color: #0066cc;
+        --secondary-color: #cc00ff;
+        --accent-color: #00aa66;
+        --bg-color: #f0f2f5;
+        --text-color: #333344;
+        --border-color: rgba(0, 102, 204, 0.3);
+        --border-line: rgba(0, 102, 204, 0.3);
+        --glow-effect: 0 0 10px rgba(0, 102, 204, 0.5);
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --grid-color: rgba(0, 102, 204, 0.05);
+    }
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glow-effect);
+    }
+
+    .card-cover {
+        width: 100%;
+        height: 160px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-image: url('@/assets/avatar.png');
+        background-size: cover;
+        background-position: center;
+        filter: blur(30px);
+        transform: scale(1.2);
+        z-index: 1;
+    }
+
+    .user {
+        padding: 45px 15px 15px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        flex-direction: column;
+        z-index: 2;
+
+        .avatar_wrapper {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin-bottom: 12px;
+
+            .userAvatar {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid var(--primary-color);
+                box-shadow: 0 0 15px var(--primary-color);
+                transition: transform 0.5s;
+                z-index: 20;
+
+                &:hover {
+                    transform: rotate(360deg);
+                    box-shadow: 0 0 25px var(--primary-color);
+                }
+            }
+        }
+
+        .username {
+            color: var(--text-color);
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+
+            &:hover {
+                color: var(--primary-color);
+            }
+
+            svg {
+                width: 18px;
+                height: 18px;
+                color: var(--primary-color);
+            }
+        }
+
+        .desc {
+            font-size: 16px;
+            margin-top: 10px;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(
+                90deg,
+                var(--primary-color),
+                var(--secondary-color),
+                var(--accent-color)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        .site-data {
+            margin: 14px 0 4px;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            text-align: center;
+
+            a {
+                display: flex;
+                flex-direction: column;
+                margin: 0 10px;
+                transition: all 0.3s;
+                padding: 5px 10px;
+                border-radius: 8px;
+
+                &:hover {
+                    transform: scale(1.1);
+                    background: rgba(var(--primary-color), 0.1);
+                }
+
+                .headline {
+                    color: var(--text-color);
+                    font-size: 14px;
+                    opacity: 0.8;
+                }
+
+                .count {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: var(--primary-color);
+                }
+            }
+        }
+
+        .lianxi {
+            border-top: 1px solid var(--border-line);
+            padding: 10px 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+
+            a {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: rgba(var(--primary-color), 0.1);
+                transition: all 0.3s;
+
+                &:hover {
+                    transform: scale(1.2);
+                    background: var(--primary-color);
+                    box-shadow: 0 0 10px var(--primary-color);
+
+                    svg {
+                        color: white;
+                    }
+                }
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    color: var(--primary-color);
+                    transition: all 0.3s;
+                }
+            }
+        }
+
+        .collect {
+            margin-top: 15px;
+            width: 100%;
+
+            .btn {
+                width: 100%;
+                height: 40px;
+                background: transparent;
+                border: 2px solid var(--primary-color);
+                color: var(--primary-color);
+                font-weight: bold;
+                border-radius: 8px;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.5s;
+                z-index: 1;
+
+                &:hover {
+                    color: white;
+                    transform: translateY(-3px);
+
+                    &::before {
+                        width: 100%;
+                    }
+                }
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 0;
+                    height: 100%;
+                    background: var(--primary-color);
+                    transition: all 0.5s;
+                    z-index: -1;
+                }
+            }
+        }
+    }
 }
 </style>

@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="user-avatar" @click="toggleUserMenu">
-                    <img :src="userAvatar" alt="User" />
+                    <img src="@/assets/avatar.png" alt="User" />
                     <div class="avatar-ring"></div>
                 </div>
 

@@ -1,5 +1,6 @@
+<!-- ArticleItem.vue -->
 <template>
-    <el-card class="article-item box-shadow-top wow pulse">
+    <el-card class="article-item" :class="theme">
         <el-tooltip
             class="box-item"
             effect="dark"
@@ -26,7 +27,7 @@
                         <h3>
                             <router-link :to="articleLink">
                                 <span v-if="article.isStick" class="top">
-                                    <svg-icon name="top" color="#ff0000" />
+                                    <svg-icon name="top" />
                                     置顶</span
                                 >
                                 <span class="xiahuaxian hand-style">
@@ -38,7 +39,6 @@
                             <span class="article-meta">
                                 <svg-icon
                                     name="sign1"
-                                    color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
                                 <span>{{ article.createTime }}</span>
@@ -47,7 +47,6 @@
                             <span class="article-meta">
                                 <svg-icon
                                     name="category"
-                                    color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
                                 <a
@@ -65,7 +64,6 @@
                             <span class="article-meta">
                                 <svg-icon
                                     name="dianzan"
-                                    color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
                                 <span>点赞</span>
@@ -74,7 +72,6 @@
                             <span class="article-meta">
                                 <svg-icon
                                     name="comment"
-                                    color="#ff0000"
                                     class="article-meta-icon"
                                 ></svg-icon>
                                 <span>评论</span>
@@ -112,7 +109,7 @@
                             @click="handleClike(tag.id, '/tags')"
                             >{{ tag.name }}</n-tag
                         >
-                        <svg-icon name="yuan" color="#ff0000"></svg-icon>
+                        <svg-icon name="yuan"></svg-icon>
                         <span class="read-time"> 1分钟阅读 </span>
                     </div>
                 </div>
@@ -120,13 +117,14 @@
         </div>
     </el-card>
 </template>
-  
-  <script setup>
-import { computed } from 'vue'
+
+<script setup>
+import { inject, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import SvgIcon from '@/components/SvgIcon.vue'
 import defaultImage from '@/assets/article1.png'
 
+const theme = inject('theme')
 const props = defineProps({
     article: {
         type: Object,
@@ -143,21 +141,57 @@ function handleClike(id, path) {
     })
 }
 </script>
-  
+
 <style lang="scss" scoped>
-::v-deep(.el-card__body) {
-    padding: 0;
-    width: 100%;
-}
 .article-item {
+    --primary-color: #00f0ff;
+    --secondary-color: #ff00f0;
+    --accent-color: #00ff9d;
+    --bg-color: #0a0a12;
+    --text-color: #ffffff;
+    --border-color: rgba(0, 240, 255, 0.3);
+    --border-line: rgba(0, 240, 255, 0.3);
+    --glow-effect: 0 0 10px rgba(0, 240, 255, 0.7);
+    --card-bg: rgba(30, 30, 60, 0.8);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --hover-bg: rgba(0, 240, 255, 0.1);
+
     position: relative;
     padding: 10px 5px 10px 15px;
-    background-color: var(--card-bg);
-    border: 2px solid var(--card-border);
-    border-radius: 20px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     margin-bottom: 20px;
     height: auto;
     min-height: 14em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glow-effect);
+    }
+
+    &.light {
+        --primary-color: #0066cc;
+        --secondary-color: #cc00ff;
+        --accent-color: #00aa66;
+        --bg-color: #f0f2f5;
+        --text-color: #333344;
+        --border-color: rgba(0, 102, 204, 0.3);
+        --border-line: rgba(0, 102, 204, 0.3);
+        --glow-effect: 0 0 10px rgba(0, 102, 204, 0.5);
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --text-primary: #333344;
+        --text-secondary: rgba(51, 51, 68, 0.7);
+        --hover-bg: rgba(0, 102, 204, 0.1);
+    }
+
+    ::v-deep(.el-card__body) {
+        padding: 0;
+        width: 100%;
+    }
 
     .article-content-wrapper {
         width: 100%;
@@ -175,16 +209,23 @@ function handleClike(id, path) {
             height: 100%;
             border-radius: 8px;
             border: 1px solid var(--border-line);
+            transition: transform 0.3s ease;
+            filter: brightness(0.9);
+        }
+
+        &:hover img {
+            transform: scale(1.02);
+            filter: brightness(1);
         }
     }
+
     .original {
         position: absolute;
         right: 0;
         top: 0;
         width: 0;
         height: 0;
-        border-color: transparent #40c9c6;
-        /*上下颜色 左右颜色*/
+        border-color: transparent var(--primary-color);
         border-width: 0 40px 40px 0;
         border-style: solid;
 
@@ -193,7 +234,7 @@ function handleClike(id, path) {
             top: 4px;
             right: -37px;
             font-size: 16px;
-            color: aquamarine;
+            color: white;
         }
     }
 
@@ -202,26 +243,31 @@ function handleClike(id, path) {
         flex-direction: column;
         color: var(--article-color);
         width: 50%;
-        flex: 1; // 让文字内容占据剩余空间
-        padding-left: 30px; // 添加左侧内边距
-        padding-right: 30px; // 添加右侧内边距
+        flex: 1;
+        padding-left: 30px;
+        padding-right: 30px;
         justify-content: space-between;
 
         .articleInfo-item {
             display: flex;
-            justify-content: center; // 修改为居中
-            flex-direction: column; // 添加此行以确保文字在垂直方向上居中
+            justify-content: center;
+            flex-direction: column;
             padding-top: 10px;
 
             a {
-                color: var(--article-color);
+                color: var(--text-primary);
+                transition: color 0.3s;
+
+                &:hover {
+                    color: var(--primary-color);
+                }
             }
 
             .top {
-                background-image: -webkit-linear-gradient(
-                    0deg,
-                    #3ca5f6 0,
-                    #a86af9 100%
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-color),
+                    var(--secondary-color)
                 );
                 padding: 2px 5px;
                 display: inline-flex;
@@ -231,7 +277,7 @@ function handleClike(id, path) {
                 font-size: 0.9rem;
                 margin-right: 5px;
                 color: #fff;
-                height: 20px; // 设置固定高度
+                height: 20px;
                 gap: 4px;
             }
 
@@ -241,33 +287,18 @@ function handleClike(id, path) {
                 margin-bottom: 10px;
                 color: var(--text-primary);
                 cursor: pointer;
-                .stick-tag {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 4px;
-                    font-size: 0.6em;
-                    background: linear-gradient(
-                        135deg,
-                        #f6d365 0%,
-                        #fda085 100%
-                    );
-                    color: white;
-                    padding: 3px 8px;
-                    border-radius: 4px;
-
-                    i {
-                        transform: rotate(45deg);
-                    }
-                }
             }
 
             .summary {
                 margin-top: 10px;
+                color: var(--text-secondary);
             }
+
             .article-meta-wrap {
                 margin: 6px 0;
-                color: #858585;
+                color: var(--text-secondary);
                 font-size: 90%;
+
                 .article-meta {
                     display: inline-flex;
                     align-items: center;
@@ -276,11 +307,16 @@ function handleClike(id, path) {
                     padding-bottom: 1px;
 
                     .article-meta-icon {
-                        color: var(--text-secondary);
+                        color: var(--primary-color);
+                    }
+
+                    .article-meta-separator {
+                        color: var(--border-line);
                     }
                 }
             }
         }
+
         .post-footer {
             display: flex;
             justify-content: space-between;
@@ -288,15 +324,7 @@ function handleClike(id, path) {
             padding-top: 10px;
             border-top: 1px solid var(--border-color);
             color: var(--text-secondary);
-            .fa-calendar {
-                color: #f56c6c;
-            }
-            .fa-eye {
-                color: #67c23a;
-            }
-            .fa-clock {
-                color: #2fa9e1;
-            }
+
             .footer-left {
                 display: flex;
                 align-items: center;
@@ -312,14 +340,6 @@ function handleClike(id, path) {
                         color: var(--text-primary);
                     }
                 }
-
-                .post-date {
-                    color: var(--text-secondary);
-                    font-size: 0.9em;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                }
             }
 
             .footer-right {
@@ -327,12 +347,17 @@ function handleClike(id, path) {
                 align-items: center;
                 gap: 5px;
 
-                .category-tag {
-                    padding: 4px 12px;
+                .article-meta-tag {
                     background: var(--hover-bg);
-                    border-radius: 20px;
-                    font-size: 0.9em;
-                    color: var(--text-secondary);
+                    color: var(--primary-color);
+                    border-color: var(--primary-color);
+                    transition: all 0.3s;
+
+                    &:hover {
+                        background: var(--primary-color);
+                        color: white;
+                        transform: translateY(-2px);
+                    }
                 }
 
                 .read-time {
@@ -341,61 +366,10 @@ function handleClike(id, path) {
                     display: flex;
                     align-items: center;
                     gap: 5px;
-                }
-            }
-        }
-    }
 
-    .bottumItem {
-        align-items: center;
-        display: flex;
-        margin-top: 20px;
-        flex-wrap: wrap;
-
-        .articleUser {
-            line-height: 50px;
-
-            span {
-                color: var(--theme-color);
-                margin-left: 3px;
-            }
-
-            .userAvatar {
-                vertical-align: middle;
-                border: 1px solid var(--border-line);
-                transition: transform 0.5s;
-
-                &:hover {
-                    transform: rotate(360deg);
-                }
-            }
-        }
-
-        .tag {
-            display: inline-block;
-            margin-left: 20px;
-
-            .el-tag {
-                margin-right: 8px;
-            }
-        }
-
-        .articleOhter {
-            margin-left: 20px;
-            font-size: 0.8rem;
-            color: var(--text-color);
-
-            .item {
-                margin-right: 10px;
-                .el-icon {
-                    vertical-align: -2px;
-                }
-                .name {
-                    margin-right: 3px;
-                }
-
-                i {
-                    margin-right: 3px;
+                    svg {
+                        color: var(--primary-color);
+                    }
                 }
             }
         }

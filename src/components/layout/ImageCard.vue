@@ -218,7 +218,7 @@ const formatRelativeTime = (isoString) => {
     --primary-color: #00f0ff;
     --secondary-color: #ff00f0;
     --accent-color: #00ff9d;
-    --bg-color: #1a1a2e;
+    --bg-color: #0a0a12;
     --text-color: #ffffff;
     --border-color: rgba(0, 240, 255, 0.3);
     --border-line: rgba(0, 240, 255, 0.3);
@@ -290,8 +290,7 @@ const formatRelativeTime = (isoString) => {
     height: 100%;
     border-radius: 12px;
     position: relative;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
 
     :deep(.n-carousel__slide) {
         flex-shrink: 0;
@@ -309,7 +308,7 @@ const formatRelativeTime = (isoString) => {
         z-index: 10;
         pointer-events: auto;
         color: var(--primary-color);
-        background: var(--card-bg);
+        background: var(--bg-color);
         border: 1px solid var(--border-color);
         transition: all 0.3s ease;
 
@@ -371,12 +370,15 @@ const formatRelativeTime = (isoString) => {
     display: flex;
     position: relative;
     overflow: hidden;
+    background: rgba(0, 0, 0, 0.2); /* 添加深色背景增强图片对比度 */
 
     img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
+        filter: brightness(0.9); /* 轻微降低亮度增强对比 */
+        will-change: transform; /* 优化动画性能 */
     }
 
     .image-overlay {
@@ -385,20 +387,32 @@ const formatRelativeTime = (isoString) => {
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(to bottom, transparent, var(--bg-color));
-        opacity: 0.5;
+        background: linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0, 0, 0, 0.3) /* 使用更深的遮罩颜色 */
+        );
+        opacity: 0.6; /* 降低透明度 */
         transition: opacity 0.3s ease;
+        mix-blend-mode: multiply; /* 使用混合模式增强效果 */
     }
 
-    &:hover img {
-        transform: scale(1.05);
+    &:hover {
+        img {
+            transform: scale(1.05);
+            filter: brightness(1); /* 悬停时恢复亮度 */
+        }
+
+        .image-overlay {
+            opacity: 0.4; /* 悬停时降低遮罩透明度 */
+        }
     }
 }
 
 .slide-content {
     flex: 1;
     padding: 2rem;
-    background: var(--card-bg);
+    background: var(--bg-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -480,6 +494,7 @@ const formatRelativeTime = (isoString) => {
     height: 180px;
     margin-bottom: 16px;
     perspective: 1000px;
+    margin-top: 10px;
 
     @media (max-width: 768px) {
         flex-direction: column;
@@ -521,7 +536,7 @@ const formatRelativeTime = (isoString) => {
     transition: all 0.4s cubic-bezier(0.39, 0.575, 0.565, 1);
     transform: scale(1);
     overflow: hidden;
-    border: 1.5px solid var(--border-line);
+
     position: relative;
     text-decoration: none;
     cursor: pointer;
