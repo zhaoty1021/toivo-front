@@ -59,24 +59,7 @@
                             >
                         </div>
                     </div>
-                    <div class="detail-card">
-                        <div class="detail-icon">
-                            <svg-icon name="pressure" />
-                        </div>
-                        <div class="detail-text">
-                            <span class="label">气压</span>
-                            <span class="value">1012hPa</span>
-                        </div>
-                    </div>
-                    <div class="detail-card">
-                        <div class="detail-icon">
-                            <svg-icon name="visibility" />
-                        </div>
-                        <div class="detail-text">
-                            <span class="label">能见度</span>
-                            <span class="value">10km</span>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
             <div v-else class="error-message">

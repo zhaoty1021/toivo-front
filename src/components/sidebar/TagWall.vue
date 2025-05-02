@@ -96,7 +96,7 @@ const handleTagClick = (id) => {
     border-radius: 12px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin-bottom: 0;
+    margin-bottom: 20px;
     position: relative;
     z-index: 1;
 

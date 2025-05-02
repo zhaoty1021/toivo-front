@@ -4,65 +4,89 @@
             <div class="typing-container">
                 <div class="typing-text">
                     {{ displayText }}
-                    <span class="cursor" :class="{ blinking: isTyping }"
-                        >|</span
-                    >
+                    <span class="cursor" :class="{ blinking: isTyping }">|</span>
                 </div>
-                <div class="subtitle">每日一句 · 灵感语录</div>
+                <!-- 添加出处和作者信息 -->
+                <div class="quote-info" v-if="currentQuote.from">
+                    <div class="subtitle">每日一句 · 灵感语录</div>
+                    <div class="quote-source">
+                        <span v-if="currentQuote.from_who">《{{ currentQuote.from }}》· {{ currentQuote.from_who }}</span>
+                        <span v-else>《{{ currentQuote.from }}》</span>
+                    </div>
+                </div>
             </div>
         </div>
         <Wave />
     </div>
 </template>
-  
-  <script setup>
-import { ref, onMounted, inject } from 'vue'
+
+<script setup>
+import { ref, reactive, onMounted, inject } from 'vue'
 import Wave from '@/components/layout/Wave.vue'
 
 const theme = inject('theme')
 const displayText = ref('')
 const isTyping = ref(true)
-const obj = reactive({
-    output: '',
-    isEnd: false,
-    speed: 300,
-    singleBack: false,
-    sleep: 0,
-    type: 'rollback',
-    backSpeed: 100,
-    sentencePause: false
+const currentQuote = reactive({
+    hitokoto: '',
+    from: '',
+    from_who: ''
 })
 
 const defaultQuotes = [
-    '代码如诗，逻辑如画',
-    '科技创造未来',
-    '创新驱动发展',
-    '简洁是智慧的精华',
-    '持续学习，持续进步'
+    {
+        hitokoto: '代码如诗，逻辑如画',
+        from: '开发者箴言',
+        from_who: '佚名'
+    },
+    {
+        hitokoto: '科技创造未来',
+        from: '科技格言',
+        from_who: ''
+    },
+    {
+        hitokoto: '创新驱动发展',
+        from: '创新理念',
+        from_who: ''
+    },
+    {
+        hitokoto: '简洁是智慧的精华',
+        from: '设计哲学',
+        from_who: '佚名'
+    },
+    {
+        hitokoto: '持续学习，持续进步',
+        from: '学习之道',
+        from_who: ''
+    }
 ]
 
 onMounted(() => {
     fetchHitokoto()
 })
 
-const startTyping = (text) => {
+const startTyping = (quote) => {
     isTyping.value = true
-    typeWriter(text, 0)
+    Object.assign(currentQuote, quote)
+    typeWriter(quote.hitokoto, 0)
 }
 
 const fetchHitokoto = async () => {
     try {
-        const response = await fetch('https://v1.hitokoto.cn/?c=i&encode=json')
+        const response = await fetch('https://v1.hitokoto.cn/?c=k&encode=json')
         if (response.ok) {
             const data = await response.json()
-            startTyping(data.hitokoto)
+            startTyping({
+                hitokoto: data.hitokoto,
+                from: data.from,
+                from_who: data.from_who || ''
+            })
         } else {
             throw new Error('API请求失败')
         }
     } catch (error) {
         console.error('使用本地语录:', error)
-        const randomQuote =
-            defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)]
+        const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)]
         startTyping(randomQuote)
     }
 }
@@ -88,13 +112,14 @@ const deleteText = (text, i) => {
     }
 }
 </script>
-  
-  <style lang="scss" scoped>
+
+<style lang="scss" scoped>
 .brand-container {
     --primary-color: #00f0ff;
     --text-color: #ffffff;
     --bg-color: #0a0a12;
     --accent-color: #00ff9d;
+    --secondary-text: rgba(255, 255, 255, 0.7);
 
     position: relative;
     width: 100%;
@@ -111,6 +136,7 @@ const deleteText = (text, i) => {
         --text-color: #333344;
         --primary-color: #0066cc;
         --accent-color: #00aa66;
+        --secondary-text: rgba(0, 0, 0, 0.6);
     }
 }
 
@@ -137,6 +163,7 @@ const deleteText = (text, i) => {
     text-shadow: 0 0 8px var(--primary-color);
     line-height: 1.4;
     letter-spacing: 0.05em;
+    margin-bottom: 1rem;
 }
 
 .cursor {
@@ -152,14 +179,25 @@ const deleteText = (text, i) => {
     }
 }
 
-.subtitle {
+.quote-info {
     margin-top: 1.5rem;
+    opacity: 0;
+    animation: fadeIn 1s ease-out 1s forwards;
+}
+
+.subtitle {
     font-size: 0.9rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
-    opacity: 0;
-    animation: fadeIn 1s ease-out 1s forwards;
+    color: var(--secondary-text);
+    margin-bottom: 0.5rem;
+}
+
+.quote-source {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    font-style: italic;
+    letter-spacing: 0.05em;
 }
 
 @keyframes blink {
@@ -186,6 +224,10 @@ const deleteText = (text, i) => {
 
     .subtitle {
         font-size: 0.7rem;
+    }
+
+    .quote-source {
+        font-size: 0.8rem;
     }
 }
 </style>

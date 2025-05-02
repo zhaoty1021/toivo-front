@@ -70,7 +70,7 @@
 import { getArticleDetailApi, likeArticleApi } from '@/api/article'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
-import Comment from '@/components/Comment/index.vue'
+import Comment from '@/components/comment/index.vue'
 import { inject } from 'vue'
 
 import ArticleHeader from './components/ArticleHeader.vue'
