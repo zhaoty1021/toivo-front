@@ -1,341 +1,249 @@
 <template>
-  <div class="container" v-sy-loading="fullscreenLoading">
-    <div class="tag-wapper">
-      <div class="left">
-        <div class="tag-box">
-          <div class="tag-title">
-            <svg-icon name="tag"></svg-icon> 标签 ({{ tagList.length }})
-          </div>
-          <div class="tag-list">
-            <a
-              ref="tagRef"
-              :style="{ fontSize: tag.font }"
-              :class="
-                handleChoose(tag, index)
-                  ? 'tag-option hand-style active'
-                  : 'tag-option hand-style'
-              "
-              @click="handleClick(tag.id, index)"
-              v-for="(tag, index) in tagList"
-              :key="index"
-            >
-              {{ tag.name }} <span class="num">{{ tag.articleNum }}</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="article-list" v-if="articleList.length">
-          <div
-            class="article-item box-shadow-top wow pulse"
-            v-for="(article, index) in articleList"
-            :key="index"
-          >
-            <div class="article-cover">
-              <img v-lazy="article.avatar" :key="article.avatar" alt="" />
+    <div class="tags-container" :class="theme">
+        <div class="tags-card">
+            <div class="tags-header">
+                <svg-icon name="tag" class="header-icon" />
+                <h1>标签云</h1>
+                <span class="tags-count">{{ tags.length }}个标签</span>
             </div>
-            <div class="article-right">
-              <router-link :to="'/article/' + article.id">
-                <h4>{{ article.title }}</h4>
-              </router-link>
-              <div class="article-meta">
-                <el-avatar
-                  class="userAvatar"
-                  :src="siteStore.getWebInfo.authorAvatar"
-                ></el-avatar>
-                <el-tooltip
-                  class="item"
-                  effect="dark"
-                  content="文章分类"
-                  placement="top"
+
+            <div class="tags-wall">
+                <router-link
+                    v-for="tag in tags"
+                    :key="tag.id"
+                    :to="`/tags/${tag.id}`"
+                    class="tag-brick"
+                    :style="{
+                        '--hue': getHue(tag.id),
+                        '--size': getSize(tag.count),
+                        width: getWidth(tag.count)
+                    }"
                 >
-                  <el-tag
-                    class="hand-style"
-                    @click="handleNatigation(article.categoryId, '/category')"
-                  >
-                    <i class="el-icon-folder-opened"></i>
-                    {{ article.categoryName }}
-                  </el-tag>
-                </el-tooltip>
-                <el-icon><Clock /></el-icon> {{ article.formatCreateTime }}
-              </div>
+                    <span class="tag-name">{{ tag.name }}</span>
+                    <span class="tag-count">{{ tag.count }}</span>
+                    <div class="tag-wave"></div>
+                </router-link>
             </div>
-          </div>
-          <!-- 分页按钮 -->
-          <div>
-            <sy-pagination
-              :pageNo="pageData.pageNo"
-              :pages="pages"
-              @changePage="handlePage"
-            />
-          </div>
         </div>
-        <sy-empty v-else message="此标签下暂无发布文章" />
-      </div>
-      <div class="right">
-        <AuthorInfo style="position: sticky; top: 60px" />
-      </div>
     </div>
-  </div>
 </template>
+  
+  <script setup>
+import { ref, inject } from 'vue'
 
-<script setup name="tag">
-import WOW from "wow.js";
-import "wow.js/css/libs/animate.css";
+const theme = inject('theme')
 
-import AuthorInfo from "@/components/authorInfo/index.vue";
-import { listArticle, listTagAll } from "@/api";
-import { useSiteStore } from "@/store/moudel/site.js";
+// 模拟标签数据
+const tags = ref([
+    { id: 1, name: 'Vue3', count: 28 },
+    { id: 2, name: 'React', count: 42 },
+    { id: 3, name: 'JavaScript', count: 56 },
+    { id: 4, name: 'TypeScript', count: 34 },
+    { id: 5, name: 'Node.js', count: 19 },
+    { id: 6, name: 'CSS3', count: 47 },
+    { id: 7, name: 'HTML5', count: 23 },
+    { id: 8, name: 'Webpack', count: 15 },
+    { id: 9, name: 'Docker', count: 31 },
+    { id: 10, name: 'Git', count: 38 },
+    { id: 11, name: '算法', count: 27 },
+    { id: 12, name: '设计模式', count: 18 },
+    { id: 13, name: '机器学习', count: 22 },
+    { id: 14, name: '人工智能', count: 36 },
+    { id: 15, name: '网络安全', count: 19 }
+])
 
-const siteStore = useSiteStore();
-const route = useRoute();
-const router = useRouter();
-const tagList = ref([]);
-const articleList = ref([]);
-const pages = ref(0);
-const lastIndex = ref(null);
-const pageData = ref({
-  pageNo: 1,
-  pageSize: 8,
-  tagId: route.query.id,
-});
-const tagRef = ref();
-const fullscreenLoading = ref(false);
-
-watch(route, (newX) => {
-  pageData.value.pageNo = 1;
-  pageData.value.tagId = newX.query.id
-  articleList.value = []
-  getArticleList()
-});
-
-/**跳转 */
-function handleNatigation(id, path) {
-  router.push({ path: path, query: { id: id } });
+// 生成不同色调
+const getHue = (id) => {
+    const hues = [180, 200, 220, 240, 260, 280, 300]
+    return hues[id % hues.length]
 }
 
-/**选中标签 */
-function handleChoose(item) {
-  return item.id == pageData.value.tagId;
+// 根据文章数量生成大小
+const getSize = (count) => {
+    const base = 14
+    return Math.min(base + count * 0.3, 22)
 }
 
-/**点击标签 */
-function handleClick(id, index) {
-  if (index == lastIndex.value) {
-    return;
-  }
-  fullscreenLoading.value = true;
-  tagRef.value[index].className = "tag-option hand-style active";
-  if (lastIndex.value != null) {
-    tagRef.value[lastIndex.value].className = "tag-option hand-style ";
-  }
-  lastIndex.value = index;
-  pageData.value.pageNo = 1;
-  pageData.value.tagId = id;
-  articleList.value = [];
-  getArticleList();
+// 根据文章数量生成宽度
+const getWidth = (count) => {
+    const base = 80
+    return `${Math.min(base + count * 2, 160)}px`
 }
-
-/** 分页 */
-function handlePage(val) {
-  fullscreenLoading.value = true;
-  pageData.value.pageNo = val;
-  getArticleList();
-}
-
-/** 获取所有标签 */
-function getTagList() {
-  listTagAll().then((res) => {
-    tagList.value = res.data;
-    for (var i = 0; i < tagList.value.length; i++) {
-      tagList.value[i].font = Math.floor(Math.random() * 10) + 10 + "px";
-    }
-    if (pageData.value.tagId == null) {
-      pageData.value.tagId = tagList.value[0].id
-    }
-    getArticleList();
-  });
-}
-
-/** 根据标签获取文章 */
-function getArticleList() {
-  listArticle(pageData.value)
-    .then((res) => {
-      articleList.value.push(...res.data.records);
-      pages.value = res.data.pages;
-    })
-    .finally(() => (fullscreenLoading.value = false));
-}
-
-onMounted(() => {
-  getTagList();
-  const wow = new WOW({
-    boxClass: "wow", // animated element css class (default is wow)
-    animateClass: "animated", // animation css class (default is animated)
-    offset: 0, // distance to the element when triggering the animation (default is 0)
-    mobile: true, // trigger animations on mobile devices (default is true)
-    live: true, // act on asynchronously loaded content (default is true)
-    callback: function (box) {
-      // the callback is fired every time an animation is started
-      // the argument that is passed in is the DOM node being animated
-    },
-    scrollContainer: null, // optional scroll container selector, otherwise use window
-  });
-  wow.init();
-});
 </script>
+  
+  <style lang="scss" scoped>
+.tags-container {
+    --primary-color: #00f0ff;
+    --bg-color: #0a0a12;
+    --card-bg: rgba(30, 30, 60, 0.5);
+    --text-color: #ffffff;
+    --border-color: rgba(0, 240, 255, 0.3);
 
-<style lang="scss" scoped>
-.tag-wapper {
-  margin-top: 80px;
+    min-height: 100vh;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s;
 
-  display: flex;
-  justify-content: space-between;
+    &.light {
+        --primary-color: #0066cc;
+        --bg-color: #f5f7fa;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --text-color: #333;
+        --border-color: rgba(0, 102, 204, 0.3);
+    }
+}
 
-  @media screen and (max-width: 1118px) {
+.tags-card {
     width: 100%;
+    max-width: 1200px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
 
-    .left {
-      width: 100%;
-
-      .article-cover {
-        display: none;
-      }
-    }
-
-    .right {
-      display: none;
-    }
-  }
-
-  @media screen and (min-width: 1119px) {
-    width: 65%;
-
-    .left {
-      width: 70%;
-
-      .article-cover {
-        width: 150px;
-        height: 80px;
-      }
-    }
-
-    .right {
-      width: 30%;
-    }
-  }
-
-  .left {
+.tags-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
     color: var(--text-color);
-    margin-right: 15px;
+    position: relative;
 
-    .tag-box {
-      background-color: var(--background-color);
-      padding: 15px;
-      border-radius: 5px;
-
-      .tag-title {
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-        margin-top: 10px;
-
-        svg {
-          width: 20px;
-          height: 20px;
-          vertical-align: -5px;
-        }
-      }
-
-      .tag-list {
-        .tag-option {
-          display: inline-block;
-          border: 1px solid var(--border-line);
-          border-radius: 5px;
-          margin-right: 10px;
-          padding: 5px;
-          margin-bottom: 10px;
-
-          &:hover {
-            background-color: rgb(171, 214, 214);
-          }
-
-          .num {
-            display: inline-block;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            background-color: #66b1ff;
-            text-align: center;
-            line-height: 20px;
-            color: white;
-            font-size: 12px;
-          }
-        }
-
-        .active {
-          background-color: rgb(171, 214, 214);
-        }
-      }
+    .header-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 12px;
+        color: var(--primary-color);
     }
 
-    .article-list {
-      margin-top: 20px;
-
-      .article-item {
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-        background-color: var(--background-color);
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        .article-cover {
-          border-radius: 5px;
-
-          img {
-            width: 100%;
-            height: 100%;
-            border-radius: 5px;
-          }
-        }
-
-        .article-right {
-          display: flex;
-          flex-direction: column;
-          margin-left: 10px;
-
-          a {
-            text-decoration: none;
-            color: var(--text-color);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 1;
-
-            &:hover {
-              color: var(--theme-color);
-            }
-          }
-        }
-
-        .article-meta {
-          margin-top: 15px;
-          display: flex;
-          align-items: center;
-
-          .userAvatar {
-            margin-right: 10px;
-          }
-
-          i {
-            margin: 0 5px;
-          }
-        }
-      }
+    h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-right: 15px;
     }
-  }
+
+    .tags-count {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        align-self: flex-end;
+        margin-bottom: 5px;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: var(--border-color);
+        opacity: 0.3;
+    }
+}
+
+.tags-wall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.tag-brick {
+    position: relative;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: calc(var(--size) * 1px);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: hsla(var(--hue), 80%, 50%, 0.7);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(var(--size) * 2px);
+    min-width: 80px;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px hsla(var(--hue), 80%, 50%, 0.3);
+
+        .tag-wave {
+            transform: translateX(0) translateY(-50%);
+        }
+    }
+
+    .tag-name {
+        z-index: 2;
+        white-space: nowrap;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .tag-count {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: calc(var(--size) * 0.6px);
+        z-index: 2;
+    }
+
+    .tag-wave {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            90deg,
+            hsla(var(--hue), 80%, 60%, 0.3) 0%,
+            hsla(var(--hue), 80%, 70%, 0.5) 50%,
+            hsla(var(--hue), 80%, 60%, 0.3) 100%
+        );
+        transform: translateX(-50%) translateY(-50%);
+        transition: transform 1s ease;
+        z-index: 1;
+        animation: wave 3s infinite linear;
+    }
+}
+
+@keyframes wave {
+    0% {
+        transform: translateX(-50%) translateY(-50%);
+    }
+    100% {
+        transform: translateX(0%) translateY(-50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .tags-card {
+        padding: 20px;
+    }
+
+    .tags-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .tags-count {
+            align-self: flex-start;
+        }
+    }
+
+    .tag-brick {
+        padding: 10px 15px;
+        font-size: calc(var(--size) * 0.8px);
+        height: calc(var(--size) * 1.8px);
+    }
 }
 </style>
