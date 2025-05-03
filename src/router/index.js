@@ -129,7 +129,7 @@ const routes = [
 
 const router = createRouter({
     routes,
-    history: createWebHistory(),
+    history: createWebHistory("/toivo/"),
     scrollBehavior: (to, from, savePosition) => {
         return {
             top: 0

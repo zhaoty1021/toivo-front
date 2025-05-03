@@ -3,7 +3,7 @@
         <div class="footer-content">
             <!-- 左侧信息区 -->
             <div class="footer-section info-section">
-                <h2 class="site-title">拾壹</h2>
+                <h2 class="site-title">TOIVO</h2>
                 <div class="site-info">
                     <p class="site-description">Dean【热衷于互联网的发展】</p>
                     <div class="copyright">
@@ -38,18 +38,20 @@
                 </div>
             </div>
 
-            <!-- 中间装饰元素 -->
+            <!-- 中间装饰元素 - 改造后 -->
             <div class="footer-section decor-section">
-                <div class="hologram-girl">
-                    <div class="hologram-image"></div>
-                    <div class="hologram-text">
-                        <h4>绿水本无忧，因风皱面</h4>
-                        <h4>青山原不老，为雪白头</h4>
+                <div class="tech-badge">
+                    <div class="tech-icon">
+                        <svg-icon name="code" class="code-icon"></svg-icon>
+                    </div>
+                    <div class="tech-quote">
+                        <h4>代码如诗，逻辑如画</h4>
+                        <h4>每一行都是创造的艺术</h4>
                     </div>
                 </div>
             </div>
 
-            <!-- 右侧交互区 -->
+            <!-- 右侧交互区 - 改造后 -->
             <div class="footer-section action-section">
                 <button class="hologram-button">
                     <span class="btn-text">Ctrl+D收藏本站</span>
@@ -57,18 +59,18 @@
                 </button>
 
                 <div class="site-stats">
-                    <div class="stat-item pv-stat">
-                        <i class="iconfont icon-fangwenliang stat-icon"></i>
-                        <span class="stat-label">访问量</span>
+                    <div class="stat-item article-stat">
+                        <i class="el-icon-document stat-icon"></i>
+                        <span class="stat-label">文章总数</span>
                         <span class="stat-value">{{
-                            siteStore.getSiteAccess
+                            siteStore.getArticleCount
                         }}</span>
                     </div>
-                    <div class="stat-item uv-stat">
-                        <i class="el-icon-user-solid stat-icon"></i>
-                        <span class="stat-label">访客量</span>
+                    <div class="stat-item tag-stat">
+                        <i class="el-icon-collection-tag stat-icon"></i>
+                        <span class="stat-label">标签分类</span>
                         <span class="stat-value">{{
-                            siteStore.getVsitorAccess
+                            siteStore.getTagCount
                         }}</span>
                     </div>
                 </div>
@@ -79,8 +81,8 @@
         <div class="scanline"></div>
     </footer>
 </template>
-  
-  <script setup>
+
+<script setup>
 import { useSiteStore } from '@/store/moudel/site.js'
 import { inject, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -129,8 +131,8 @@ onUnmounted(() => {
     clearInterval(timer)
 })
 </script>
-  
-  <style lang="scss" scoped>
+
+<style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400;500;700&display=swap');
 
 .footer-container {
@@ -168,21 +170,7 @@ onUnmounted(() => {
             0 0 20px rgba(0, 102, 204, 0.3);
     }
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(var(--grid-color) 1px, transparent 1px),
-            linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-        background-size: 20px 20px;
-        pointer-events: none;
-        opacity: 0.1;
-        z-index: 0;
-    }
-
+    /* ... 其他基础样式保持不变 ... */
     .footer-content {
         max-width: 1320px;
         width: 100%;
@@ -299,75 +287,74 @@ onUnmounted(() => {
         }
     }
 
-    // 中间装饰区样式
+    // 中间装饰区样式 - 改造后
     .decor-section {
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
 
-        .hologram-girl {
+        .tech-badge {
             position: relative;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
             text-align: center;
             transition: all 0.3s ease;
+            padding: 1.5rem;
+            background: rgba(0, 240, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
 
             &:hover {
                 transform: translateY(-5px);
-
-                .hologram-image::before {
-                    opacity: 0.8;
+                box-shadow: var(--glow-effect);
+                
+                .tech-icon {
+                    transform: rotate(5deg) scale(1.1);
                 }
             }
 
-            .hologram-image {
-                position: relative;
-                width: 100%;
-                height: 0;
-                padding-top: 60%;
-                background-image: url(https://img.shiyit.com/cyxy.png);
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
+            .tech-icon {
+                width: 80px;
+                height: 80px;
                 margin: 0 auto;
-                filter: drop-shadow(0 0 10px var(--primary-color));
+                background: linear-gradient(135deg, 
+                    rgba(0, 240, 255, 0.2), 
+                    rgba(0, 136, 255, 0.2));
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
 
-                &::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: radial-gradient(
-                        circle,
-                        var(--primary-color) 0%,
-                        transparent 70%
-                    );
-                    opacity: 0.3;
-                    z-index: -1;
-                    transition: all 0.3s ease;
+                .code-icon {
+                    width: 40px;
+                    height: 40px;
+                    color: var(--primary-color);
+                    filter: drop-shadow(0 0 5px var(--primary-color));
                 }
             }
 
-            .hologram-text {
-                margin-top: 1rem;
+            .tech-quote {
+                margin-top: 1.5rem;
                 color: var(--text-color);
                 font-family: 'Orbitron', sans-serif;
                 text-shadow: 0 0 5px var(--primary-color);
 
                 h4 {
-                    margin: 0.5rem 0;
+                    margin: 0.8rem 0;
                     font-size: 1rem;
                     font-weight: 400;
                     letter-spacing: 1px;
+                    line-height: 1.5;
                 }
             }
         }
     }
 
-    // 右侧交互区样式
+    // 右侧交互区样式 - 改造后
     .action-section {
         display: flex;
         flex-direction: column;
@@ -500,20 +487,19 @@ onUnmounted(() => {
                 }
             }
 
-            .pv-stat {
+            .article-stat {
                 .stat-value {
-                    color: #d0339b;
+                    color: #00ff9d; // 绿色调
                 }
             }
 
-            .uv-stat {
+            .tag-stat {
                 .stat-value {
-                    color: #e2c63a;
+                    color: #ff00f0; // 粉色调
                 }
             }
         }
     }
-
     // 扫描线效果
     .scanline {
         position: absolute;
@@ -581,5 +567,6 @@ onUnmounted(() => {
     100% {
         transform: translateY(100%);
     }
+    /* ... 其他样式保持不变 ... */
 }
 </style>

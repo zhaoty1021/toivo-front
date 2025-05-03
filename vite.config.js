@@ -11,7 +11,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd());
   //返回vite配置
   return {
-    publicPath: "/",
+    base: "/toivo/",
 
     server: {
       // 允许IP访问
