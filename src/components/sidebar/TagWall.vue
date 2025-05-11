@@ -2,7 +2,7 @@
     <el-card class="tag-wall" :class="theme">
         <div class="card-header">
             <span class="card-title">
-                <svg-icon name="tag" class="icon" />
+                <svg-icon name="tagwall" class="icon" />
                 热门标签
             </span>
             <router-link to="/tags">

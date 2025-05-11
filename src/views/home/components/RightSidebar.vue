@@ -2,16 +2,16 @@
     <div class="right-box">
         <WeatherWidget />
         <TagWall :tags="tagList" />
-        <RecommendedArticles :articles="newArticleList" />
-        <FollowMe :webInfo="webInfo" />
-
-        <Announcement />
+        <RecommendedArticles />
+        <WebsiteInfo/>
+       
     </div>
 </template>
   
   <script setup>
 import QrCodeCard from '@/components/sidebar/QrCodeCard.vue'
 import RecommendedArticles from '@/components/sidebar/RecommendedArticles.vue'
+import WebsiteInfo from '@/components/sidebar/WebsiteInfo.vue'
 import FollowMe from '@/components/sidebar/FollowMe.vue'
 import TagWall from '@/components/sidebar/TagWall.vue'
 import WeatherWidget from '@/components/sidebar/WeatherWidget.vue'
