@@ -7,7 +7,8 @@ import { getToken,removeToken } from '@/utils/cookie'
 // create an axios instance
 const service = axios.create({
     baseURL: import.meta.env.VITE_APP_BASE_API,
-    timeout: 36000 // request timeout
+    timeout: 36000, // request timeout
+    withCredentials: true,
 })
 
 // request interceptor

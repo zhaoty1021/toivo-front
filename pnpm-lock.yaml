@@ -11,6 +11,9 @@ importers:
       '@element-plus/icons-vue':
         specifier: ^2.1.0
         version: 2.3.1(vue@3.5.12)
+      '@mdi/font':
+        specifier: ^7.4.47
+        version: 7.4.47
       '@traptitech/markdown-it-katex':
         specifier: ^3.6.0
         version: 3.6.0
@@ -32,6 +35,9 @@ importers:
       highlight.js:
         specifier: ^11.10.0
         version: 11.10.0
+      howler:
+        specifier: ^2.2.4
+        version: 2.2.4
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
@@ -110,6 +116,9 @@ importers:
       vue:
         specifier: ^3.4.21
         version: 3.5.12
+      vue-audio-visual:
+        specifier: ^3.0.11
+        version: 3.0.11
       vue-lazyload:
         specifier: ^3.0.0
         version: 3.0.0
@@ -119,6 +128,9 @@ importers:
       vue3-danmaku:
         specifier: ^1.6.0
         version: 1.6.1(vue@3.5.12)
+      wavesurfer.js:
+        specifier: ^7.9.5
+        version: 7.9.5
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.0.4
@@ -332,6 +344,9 @@ packages:
 
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
+
+  '@mdi/font@7.4.47':
+    resolution: {integrity: sha512-43MtGpd585SNzHZPcYowu/84Vz2a2g31TvPMTm9uTiCSWzaheQySUcSyUH/46fPnuPQWof2yd0pGBtzee/IQWw==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1135,6 +1150,9 @@ packages:
   highlight.js@11.10.0:
     resolution: {integrity: sha512-SYVnVFswQER+zu1laSya563s+F8VDGt7o35d4utbamowvUNLLMovFqwCLSocpZTz3MgaSRA1IbqRWZv97dtErQ==}
     engines: {node: '>=12.0.0'}
+
+  howler@2.2.4:
+    resolution: {integrity: sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==}
 
   html2canvas@1.4.1:
     resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
@@ -2019,6 +2037,9 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
+  vue-audio-visual@3.0.11:
+    resolution: {integrity: sha512-toXUXswQqo/oHZuzVnhuZ+m9rM9OU5lgOkckQHGpXizF00XI1gZ1f2KpRrLMKj4e7LC23tZjcgMxDeBJRTenvg==}
+
   vue-demi@0.12.5:
     resolution: {integrity: sha512-BREuTgTYlUr0zw0EZn3hnhC3I6gPWv+Kwh4MCih6QcAeaTlaIX0DwOVN0wHej7hSvDPecz4jygy/idsgKfW58Q==}
     engines: {node: '>=12'}
@@ -2066,6 +2087,9 @@ packages:
     resolution: {integrity: sha512-wlJQj7fIwKK2pOEoOq4Aro8JdPOGpX8aWQhV8YkTW9OgWD2uj2O8ANzvSsIGjx7LTOc7QbS7sXdxHi6XvRnHPA==}
     peerDependencies:
       vue: ^3.0.11
+
+  wavesurfer.js@7.9.5:
+    resolution: {integrity: sha512-ioOG9chuAn0bF2NYYKkZtaxjcQK/hFskLg8ViLYbJHhWPk1N5wWtuqVhqeh2ZWT2SK3t0E8UkD7lLDLuZQQaSA==}
 
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
@@ -2203,6 +2227,8 @@ snapshots:
   '@jridgewell/sourcemap-codec@1.5.0': {}
 
   '@juggle/resize-observer@3.4.0': {}
+
+  '@mdi/font@7.4.47': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -3093,6 +3119,8 @@ snapshots:
   he@1.2.0: {}
 
   highlight.js@11.10.0: {}
+
+  howler@2.2.4: {}
 
   html2canvas@1.4.1:
     dependencies:
@@ -4081,6 +4109,14 @@ snapshots:
       evtd: 0.2.4
       vue: 3.5.12
 
+  vue-audio-visual@3.0.11:
+    dependencies:
+      '@vueuse/core': 9.13.0(vue@3.5.12)
+      vue: 3.5.12
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - typescript
+
   vue-demi@0.12.5(vue@3.5.12):
     dependencies:
       vue: 3.5.12
@@ -4118,6 +4154,8 @@ snapshots:
       vdirs: 0.1.8(vue@3.5.12)
       vooks: 0.2.12(vue@3.5.12)
       vue: 3.5.12
+
+  wavesurfer.js@7.9.5: {}
 
   webpack-virtual-modules@0.6.2: {}
 
