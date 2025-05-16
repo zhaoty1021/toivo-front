@@ -218,7 +218,7 @@ const logout = () => {
   .logo-box {
     display: flex;
     align-items: center;
-    cursor: pointer;
+    cursor: var(--cursor-pointer), pointer;
     transition: transform 0.3s ease;
     user-select: none;
 
@@ -278,7 +278,7 @@ const logout = () => {
       align-items: center;
       padding: 0 20px;
       height: 100%;
-      cursor: pointer;
+      cursor: var(--cursor-pointer), pointer;
       perspective: 500px;
       transform-style: preserve-3d;
 
@@ -382,7 +382,7 @@ const logout = () => {
       position: relative;
       width: 45px;
       height: 45px;
-      cursor: pointer;
+      cursor: var(--cursor-pointer), pointer;
       perspective: 500px;
       transform-style: preserve-3d;
       z-index: 5;
@@ -500,7 +500,7 @@ const logout = () => {
         padding: 12px 20px;
         color: var(--text-color);
         transition: all 0.3s ease;
-        cursor: pointer;
+        cursor: var(--cursor-pointer), pointer;
         gap: 10px;
         transform: translateZ(0);
 
@@ -666,7 +666,7 @@ const logout = () => {
   width: 60px;
   height: 30px;
   margin-right: 20px;
-  cursor: pointer;
+  cursor: var(--cursor-pointer), pointer;
   z-index: 1;
 
   .switch-track {
