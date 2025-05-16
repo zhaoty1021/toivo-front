@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import './styles/style.css'
 import './assets/font/iconfont.css'
 import './assets/font/iconfont.js'
+import clickOutside from './directives/clickOutside'
+
 
 import App from './App.vue'
 const app = createApp(App)
@@ -12,6 +14,8 @@ app.use(router)
 
 import store from './store';
 app.use(store);
+
+app.directive('click-outside', clickOutside)
 
 import SvgIcon from '@/components/SvgIcon.vue'// svg component
 app.component('svg-icon', SvgIcon)

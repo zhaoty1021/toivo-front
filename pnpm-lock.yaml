@@ -14,6 +14,9 @@ importers:
       '@traptitech/markdown-it-katex':
         specifier: ^3.6.0
         version: 3.6.0
+      animejs:
+        specifier: ^3.2.1
+        version: 3.2.1
       axios:
         specifier: ^1.6.7
         version: 1.7.7
@@ -599,6 +602,9 @@ packages:
     resolution: {integrity: sha512-8zSiw54Oxrdym50NlZ9sUusyO1Z1ZchgRLWRaK6c86XJFClyCgFKetdowBg5bKxyp/u+CDBJG4Mpp0m3HLZl9w==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  animejs@3.2.1:
+    resolution: {integrity: sha512-sWno3ugFryK5nhiDm/2BKeFCpZv7vzerWUcUPyAZLDhMek3+S/p418ldZJbJXo5ZUOpfm2kP2XRO4NJcULMy9A==}
 
   ansi-regex@2.1.1:
     resolution: {integrity: sha512-TIGnTpdo+E3+pCyAluZvtED5p5wCqLdezCyhPZzKPcxvFplEt4i+W7OONCKgeZFT3+y5NZZfOOS/Bdcanm1MYA==}
@@ -2440,6 +2446,8 @@ snapshots:
       - vue
 
   acorn@8.13.0: {}
+
+  animejs@3.2.1: {}
 
   ansi-regex@2.1.1: {}
 
