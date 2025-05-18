@@ -17,6 +17,8 @@ import chat from '@/views/chat/index.vue'
 import notice from '@/views/notice/index.vue'
 import user from '@/views/user/index.vue'
 import TagArticles from "../views/tag/TagArticles.vue";
+import recommendSite from "../views/recommendSite/recommendSite.vue";
+import recommendGame from "../views/game/recommendGame.vue";
 import { pa } from "element-plus/es/locales.mjs";
 
 const routes = [
@@ -118,6 +120,20 @@ const routes = [
                     title: "个人中心"
                 }
             },
+            {
+                path: "/recommendSite",
+                component: recommendSite,
+                meta: {
+                    title: "推荐网站"
+                }
+            },
+            {
+                path: "/recommendGame",
+                component: recommendGame,
+                meta: {
+                    title: "推荐游戏"
+                }
+            }
         ],
     },
     {
