@@ -68,8 +68,8 @@
               <SkipBack class="control-icon" />
             </button>
             <button @click="togglePlay" class="control-btn play-btn">
-              <component
-                :is="isPlaying ? 'Pause' : 'Play'"
+              <svg-icon
+                :name="isPlaying ? 'pause' : 'play'"
                 class="control-icon"
               />
             </button>
@@ -96,11 +96,11 @@
             :style="{ backgroundImage: `url(${track.cover})` }"
           >
             <div class="play-overlay">
-              <component
-                :is="
+              <svg-icon
+                :name="
                   currentTrack && currentTrack.id === track.id && isPlaying
-                    ? 'Pause'
-                    : 'Play'
+                    ? 'pause'
+                    : 'play'
                 "
                 class="overlay-icon"
               />

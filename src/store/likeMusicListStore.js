@@ -19,11 +19,11 @@ export const useLikeMusicListStore = defineStore('likeMusicList', () => {
     const likeListResponse = await getLikeList()
         // const likeListResponse = {
         //   code: 200,
-        //   data: {
-        //     ids: [1365543521, 2161527760] // 模拟数据
-        //   }
+          
+        //   ids: [1365543521, 2161527760] // 模拟数据
+          
         // }
-      const ids = likeListResponse.data.ids || []
+      const ids = likeListResponse.ids || []
       
       if (ids.length === 0) {
         likeList.value = []
@@ -66,26 +66,26 @@ export const useLikeMusicListStore = defineStore('likeMusicList', () => {
         })
       
       // 4. 并行获取所有歌词
-      const lyricPromises = musicList.map(music => 
-        getLyric(music.id).then(res => {
-          if (res.code === 200) {
-            return {
-              ...music,
-              lyric: res.lrc?.lyric || '',
-              tlyric: res.tlyric?.lyric || ''
-            }
-          }
-          return {
-            ...music,
-            lyric: '',
-            tlyric: ''
-          }
-        }).catch(() => ({
-          ...music,
-          lyric: '',
-          tlyric: ''
-        }))
-      )
+    //   const lyricPromises = musicList.map(music => 
+    //     getLyric(music.id).then(res => {
+    //       if (res.code === 200) {
+    //         return {
+    //           ...music,
+    //           lyric: res.lrc?.lyric || '',
+    //           tlyric: res.tlyric?.lyric || ''
+    //         }
+    //       }
+    //       return {
+    //         ...music,
+    //         lyric: '',
+    //         tlyric: ''
+    //       }
+    //     }).catch(() => ({
+    //       ...music,
+    //       lyric: '',
+    //       tlyric: ''
+    //     }))
+    //   )
       console.log('lyricPromises', musicList)
       const completeMusicList = musicList
       
