@@ -19,6 +19,7 @@ import user from '@/views/user/index.vue'
 import TagArticles from "../views/tag/TagArticles.vue";
 import recommendSite from "../views/recommendSite/recommendSite.vue";
 import recommendGame from "../views/game/recommendGame.vue";
+import musicHouse from "../views/musicHouse/musicHouse.vue";
 import { pa } from "element-plus/es/locales.mjs";
 
 const routes = [
@@ -132,6 +133,13 @@ const routes = [
                 component: recommendGame,
                 meta: {
                     title: "推荐游戏"
+                }
+            },
+            {
+                path: "/musicHouse",
+                component: musicHouse,
+                meta: {
+                    title: "音乐屋"
                 }
             }
         ],
