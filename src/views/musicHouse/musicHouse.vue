@@ -7,6 +7,18 @@
         <div class="music-underline"></div>
       </div>
 
+      <!-- 搜索框 -->
+      <div class="search-container">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="搜索歌曲..."
+          class="search-input"
+          @input="handleSearch"
+        />
+        <svg-icon name="search" class="search-icon" />
+      </div>
+
       <!-- 音乐分类导航 -->
       <div class="music-category-nav">
         <div
@@ -172,14 +184,6 @@ const likeMusicStore = useLikeMusicListStore();
 const lyrics = ref([]);
 const currentLyricIndex = ref(-1);
 const lyricsContainer = ref(null);
-
-// 根据分类筛选音乐
-const filteredTracks = computed(() => {
-  if (activeCategory.value === "like") return tracks.value;
-  return tracks.value.filter(
-    (track) => track.category === activeCategory.value
-  );
-});
 
 // 解析歌词
 const parseLyrics = (lyricString) => {
@@ -389,29 +393,37 @@ const formatTime = (seconds) => {
   return `${mins}:${secs < 10 ? "0" + secs : secs}`;
 };
 
-// 加载推荐音乐
-const loadRecommendSongs = async () => {
-  try {
-    const response = await recommendSongs();
-    if (response.code === 200) {
-      tracks.value = response.data.dailySongs.map((song) => ({
-        id: song.id,
-        name: song.name,
-        artist: song.ar.map((artist) => artist.name).join("/"),
-        cover: song.al.picUrl,
-        duration: song.dt / 1000,
-        category: "pop", // 默认分类
-        liked: false,
-        lyric: "",
-      }));
+// 搜索相关
+const searchQuery = ref("");
+const originalTracks = ref([]); // 保存原始音乐列表
 
-      // 默认播放第一首
-      if (tracks.value.length > 0) {
-        await playTrack(tracks.value[0]);
-      }
-    }
-  } catch (error) {
-    console.error("获取推荐音乐失败:", error);
+// 修改 filteredTracks 计算属性以包含搜索功能
+const filteredTracks = computed(() => {
+  let result = [...tracks.value];
+
+  // 应用分类筛选
+  if (activeCategory.value !== "like") {
+    result = result.filter((track) => track.category === activeCategory.value);
+  }
+
+  // 应用搜索筛选
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase();
+    result = result.filter(
+      (track) =>
+        track.name.toLowerCase().includes(query) ||
+        track.artist.toLowerCase().includes(query)
+    );
+  }
+
+  return result;
+});
+
+// 搜索处理函数
+const handleSearch = () => {
+  // 如果搜索框为空，恢复原始列表
+  if (!searchQuery.value.trim()) {
+    tracks.value = [...originalTracks.value];
   }
 };
 
@@ -419,9 +431,12 @@ const loadRecommendSongs = async () => {
 onMounted(async () => {
   await likeMusicStore.fetchLikeMusicList();
   console.log("喜欢的音乐列表:", likeMusicStore.likeList);
-  tracks.value = {
-    ...likeMusicStore.likeList,
-  };
+  // 确保 tracks.value 是数组
+  tracks.value = Array.isArray(likeMusicStore.likeList)
+    ? [...likeMusicStore.likeList]
+    : [];
+
+  originalTracks.value = [...tracks.value];
 });
 
 // 清理
@@ -508,6 +523,42 @@ onBeforeUnmount(() => {
         margin: 0 auto;
         width: 120px;
         border-radius: 3px;
+      }
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+
+      .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border-radius: 25px;
+        border: 1px solid var(--border-color);
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 2px rgba(98, 0, 234, 0.1);
+        }
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: var(--text-color);
+        opacity: 0.7;
       }
     }
 

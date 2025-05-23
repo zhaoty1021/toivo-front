@@ -34,9 +34,62 @@
               :style="{ color: item.color }"
             />
             <span class="menu-text">{{ item.name }}</span>
+            <!-- 下拉箭头指示器 -->
+            <span
+              v-if="item.children && item.children.length"
+              class="dropdown-arrow"
+              >▼</span
+            >
             <div class="menu-line"></div>
           </div>
           <div class="menu-particles" v-if="activeMenu === item.path"></div>
+
+          <!-- 二级导航下拉菜单 -->
+          <transition name="submenu-fade">
+            <div
+              v-if="
+                item.children &&
+                item.children.length &&
+                activeMenu === item.path
+              "
+              class="submenu-panel"
+              @mouseenter="keepSubmenuActive"
+              @mouseleave="deactivateMenu"
+            >
+              <div class="submenu-grid"></div>
+              <div class="submenu-glow"></div>
+
+              <div class="submenu-container">
+                <div
+                  v-for="subItem in item.children"
+                  :key="subItem.path"
+                  class="submenu-item"
+                  @click.stop="handleSubMenuClick(subItem)"
+                >
+                  <div class="submenu-hologram">
+                    <SvgIcon
+                      :name="subItem.icon"
+                      class="submenu-icon"
+                      :style="{ color: subItem.color || item.color }"
+                    />
+                    <div class="submenu-content">
+                      <span class="submenu-title">{{ subItem.name }}</span>
+                      <span v-if="subItem.desc" class="submenu-desc">{{
+                        subItem.desc
+                      }}</span>
+                    </div>
+                    <div class="submenu-particle-trail"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 全息边框效果 -->
+              <div class="submenu-border-top"></div>
+              <div class="submenu-border-bottom"></div>
+              <div class="submenu-border-left"></div>
+              <div class="submenu-border-right"></div>
+            </div>
+          </transition>
         </div>
       </div>
 
@@ -93,36 +146,221 @@ const router = useRouter();
 const theme = inject("theme");
 const activeMenu = ref(null);
 const showParticles = ref(true);
+const submenuTimer = ref(null);
 
 // 切换主题
 const toggleTheme = () => {
   theme.value = theme.value === "dark" ? "light" : "dark";
 };
 
-// 菜单配置
+// 菜单配置 - 增加了二级菜单
 const menuItems = [
-  { path: "/", name: "首页", icon: "nav-home", color: "#FF5F5F" },
-  { path: "/archive", name: "归档", icon: "nav-archive", color: "#5F9EA0" },
-  { path: "/category", name: "分类", icon: "nav-category", color: "#9370DB" },
-  { path: "/tags", name: "标签", icon: "nav-tag", color: "#FFA500" },
-  { path: "/message", name: "留言", icon: "nav-message", color: "#20B2AA" },
-  { path: "/say", name: "说说", icon: "nav-say", color: "#FF69B4" },
-  { path: "/link", name: "友链", icon: "nav-link", color: "#1E90FF" },
-  { path: "/about", name: "关于", icon: "nav-about", color: "#32CD32" },
+  {
+    path: "/",
+    name: "首页",
+    icon: "nav-home",
+    color: "#FF5F5F",
+  },
+  {
+    path: "/archive",
+    name: "归档",
+    icon: "nav-archive",
+    color: "#5F9EA0",
+    children: [
+      {
+        path: "/archive/2024",
+        name: "2024年",
+        desc: "最新文章",
+        icon: "nav-time",
+        color: "#5F9EA0",
+      },
+      {
+        path: "/archive/2023",
+        name: "2023年",
+        desc: "往年精选",
+        icon: "nav-time",
+        color: "#5F9EA0",
+      },
+      {
+        path: "/archive/all",
+        name: "全部归档",
+        desc: "查看所有",
+        icon: "nav-list",
+        color: "#5F9EA0",
+      },
+    ],
+  },
+  {
+    path: "/category",
+    name: "分类",
+    icon: "nav-category",
+    color: "#9370DB",
+    children: [
+      {
+        path: "/category/tech",
+        name: "技术分享",
+        desc: "编程开发",
+        icon: "nav-code",
+        color: "#9370DB",
+      },
+      {
+        path: "/category/life",
+        name: "生活随笔",
+        desc: "日常记录",
+        icon: "nav-heart",
+        color: "#9370DB",
+      },
+      {
+        path: "/category/travel",
+        name: "旅行游记",
+        desc: "世界各地",
+        icon: "nav-map",
+        color: "#9370DB",
+      },
+      {
+        path: "/category/book",
+        name: "读书笔记",
+        desc: "知识分享",
+        icon: "nav-book",
+        color: "#9370DB",
+      },
+    ],
+  },
+  {
+    path: "/tags",
+    name: "标签",
+    icon: "nav-tag",
+    color: "#FFA500",
+    children: [
+      {
+        path: "/tags/vue",
+        name: "Vue.js",
+        desc: "前端框架",
+        icon: "nav-vue",
+        color: "#FFA500",
+      },
+      {
+        path: "/tags/javascript",
+        name: "JavaScript",
+        desc: "编程语言",
+        icon: "nav-js",
+        color: "#FFA500",
+      },
+      {
+        path: "/tags/css",
+        name: "CSS",
+        desc: "样式设计",
+        icon: "nav-css",
+        color: "#FFA500",
+      },
+      {
+        path: "/tags/nodejs",
+        name: "Node.js",
+        desc: "后端开发",
+        icon: "nav-node",
+        color: "#FFA500",
+      },
+      {
+        path: "/tags/all",
+        name: "全部标签",
+        desc: "查看所有",
+        icon: "nav-tag",
+        color: "#FFA500",
+      },
+    ],
+  },
+  {
+    path: "/message",
+    name: "留言",
+    icon: "nav-message",
+    color: "#20B2AA",
+  },
+  {
+    path: "/say",
+    name: "说说",
+    icon: "nav-say",
+    color: "#FF69B4",
+  },
+  {
+    path: "/link",
+    name: "友链",
+    icon: "nav-link",
+    color: "#1E90FF",
+    children: [
+      {
+        path: "/link/apply",
+        name: "申请友链",
+        desc: "加入我们",
+        icon: "nav-add",
+        color: "#1E90FF",
+      },
+      {
+        path: "/link/check",
+        name: "友链检测",
+        desc: "状态检查",
+        icon: "nav-check",
+        color: "#1E90FF",
+      },
+    ],
+  },
+  {
+    path: "/about",
+    name: "关于",
+    icon: "nav-about",
+    color: "#32CD32",
+    children: [
+      {
+        path: "/about/me",
+        name: "关于我",
+        desc: "个人介绍",
+        icon: "nav-user",
+        color: "#32CD32",
+      },
+      {
+        path: "/about/site",
+        name: "关于本站",
+        desc: "网站介绍",
+        icon: "nav-info",
+        color: "#32CD32",
+      },
+      {
+        path: "/about/contact",
+        name: "联系方式",
+        desc: "取得联系",
+        icon: "nav-mail",
+        color: "#32CD32",
+      },
+    ],
+  },
 ];
 
 const showUserMenu = ref(false);
 
 const handleMenuClick = (item) => {
-  router.push(item.path);
+  if (!item.children || item.children.length === 0) {
+    router.push(item.path);
+    activeMenu.value = null;
+  }
+};
+
+const handleSubMenuClick = (subItem) => {
+  router.push(subItem.path);
+  activeMenu.value = null;
 };
 
 const activateMenu = (item) => {
+  clearTimeout(submenuTimer.value);
   activeMenu.value = item.path;
 };
 
 const deactivateMenu = () => {
-  activeMenu.value = null;
+  submenuTimer.value = setTimeout(() => {
+    activeMenu.value = null;
+  }, 150);
+};
+
+const keepSubmenuActive = () => {
+  clearTimeout(submenuTimer.value);
 };
 
 const toggleUserMenu = () => {
@@ -143,7 +381,7 @@ const logout = () => {
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@500;600;700&family=Press+Start+2P&display=swap");
 
 .cyber-nav {
-  --logo-colors: #ff6ec4, #7873f5, #4facfe, #43e97b, #38f9d7; /* 深色模式 */
+  --logo-colors: #ff6ec4, #7873f5, #4facfe, #43e97b, #38f9d7;
   --primary-color: #00f0ff;
   --secondary-color: #ff00f0;
   --accent-color: #00ff9d;
@@ -164,10 +402,10 @@ const logout = () => {
   backdrop-filter: blur(10px);
   font-family: "Orbitron", "Rajdhani", sans-serif;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
-  overflow: visible !important; /* 覆盖可能的溢出隐藏 */
+  overflow: visible !important;
 
   &.light {
-    --logo-colors: #007cf0, #00dfd8, #3f51b5, #007cf0, #00dfd8; /* 浅色模式 */
+    --logo-colors: #007cf0, #00dfd8, #3f51b5, #007cf0, #00dfd8;
     --primary-color: #0066cc;
     --secondary-color: #cc00ff;
     --accent-color: #00aa66;
@@ -214,11 +452,11 @@ const logout = () => {
     padding: 0 30px;
   }
 
-  /* 全息投影Logo */
+  /* Logo部分保持不变 */
   .logo-box {
     display: flex;
     align-items: center;
-    cursor: var(--cursor-pointer), pointer;
+    cursor: pointer;
     transition: transform 0.3s ease;
     user-select: none;
 
@@ -241,7 +479,6 @@ const logout = () => {
         background-image: linear-gradient(45deg, var(--logo-colors));
         transition: transform 0.4s ease, filter 0.3s ease;
         transform-style: preserve-3d;
-
         animation: float 3s ease-in-out infinite;
         animation-delay: calc(var(--i) * 0.1s);
       }
@@ -256,6 +493,7 @@ const logout = () => {
         }
       }
     }
+
     .logo-watermelon {
       font-size: 30px;
       margin-left: 10px;
@@ -265,7 +503,7 @@ const logout = () => {
     }
   }
 
-  /* 全息菜单 */
+  /* 主导航菜单 */
   .menu-box {
     display: flex;
     height: 100%;
@@ -278,7 +516,7 @@ const logout = () => {
       align-items: center;
       padding: 0 20px;
       height: 100%;
-      cursor: var(--cursor-pointer), pointer;
+      cursor: pointer;
       perspective: 500px;
       transform-style: preserve-3d;
 
@@ -286,16 +524,13 @@ const logout = () => {
         position: relative;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         transition: all 0.3s ease;
         transform: translateZ(0);
 
         .menu-icon {
           width: 25px;
           height: 25px;
-          color: v-bind(
-            'menuItems.find(i => i.name === name)?.color || "var(--text-color)"'
-          );
           transition: all 0.3s ease;
           filter: drop-shadow(0 0 2px currentColor);
         }
@@ -307,6 +542,14 @@ const logout = () => {
           color: var(--text-color);
           white-space: nowrap;
           text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .dropdown-arrow {
+          font-size: 10px;
+          color: var(--text-color);
+          opacity: 0.7;
+          transition: all 0.3s ease;
+          transform: translateY(-2px);
         }
 
         .menu-line {
@@ -341,6 +584,214 @@ const logout = () => {
         transition: opacity 0.3s ease;
       }
 
+      /* 二级导航面板 */
+      .submenu-panel {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-color);
+        backdrop-filter: blur(15px);
+        border-radius: 15px;
+        padding: 25px;
+        min-width: 600px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(0, 240, 255, 0.2), var(--hologram-effect);
+        z-index: 1000;
+        margin-top: 15px;
+
+        .submenu-grid {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+              rgba(0, 240, 255, 0.05) 1px,
+              transparent 1px
+            ),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+          background-size: 20px 20px;
+          border-radius: 15px;
+          pointer-events: none;
+        }
+
+        .submenu-glow {
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          background: linear-gradient(
+            45deg,
+            var(--primary-color),
+            var(--secondary-color),
+            var(--accent-color)
+          );
+          border-radius: 15px;
+          z-index: -1;
+          opacity: 0.3;
+          filter: blur(8px);
+        }
+
+        .submenu-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 15px;
+          position: relative;
+          z-index: 2;
+        }
+
+        .submenu-item {
+          position: relative;
+          padding: 18px;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(0, 240, 255, 0.1);
+          overflow: hidden;
+
+          .submenu-hologram {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 2;
+
+            .submenu-icon {
+              width: 24px;
+              height: 24px;
+              flex-shrink: 0;
+              transition: all 0.3s ease;
+              filter: drop-shadow(0 0 3px currentColor);
+            }
+
+            .submenu-content {
+              flex: 1;
+
+              .submenu-title {
+                display: block;
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-color);
+                margin-bottom: 4px;
+                transition: all 0.3s ease;
+              }
+
+              .submenu-desc {
+                display: block;
+                font-size: 13px;
+                color: rgba(255, 255, 255, 0.6);
+                transition: all 0.3s ease;
+              }
+            }
+
+            .submenu-particle-trail {
+              position: absolute;
+              top: 0;
+              right: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 240, 255, 0.1),
+                transparent
+              );
+              transition: right 0.5s ease;
+            }
+          }
+
+          &:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: rgba(0, 240, 255, 0.05);
+            border-color: rgba(0, 240, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+              0 0 20px rgba(0, 240, 255, 0.2);
+
+            .submenu-hologram {
+              .submenu-icon {
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 8px currentColor);
+              }
+
+              .submenu-title {
+                color: var(--primary-color);
+                text-shadow: 0 0 10px var(--primary-color);
+              }
+
+              .submenu-desc {
+                color: rgba(0, 240, 255, 0.8);
+              }
+
+              .submenu-particle-trail {
+                right: 100%;
+              }
+            }
+          }
+        }
+
+        /* 全息边框效果 */
+        .submenu-border-top,
+        .submenu-border-bottom,
+        .submenu-border-left,
+        .submenu-border-right {
+          position: absolute;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            var(--primary-color),
+            transparent
+          );
+          opacity: 0.8;
+        }
+
+        .submenu-border-top {
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          animation: borderScan 2s linear infinite;
+        }
+
+        .submenu-border-bottom {
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          animation: borderScan 2s linear infinite reverse;
+        }
+
+        .submenu-border-left {
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 1px;
+          background: linear-gradient(
+            180deg,
+            transparent,
+            var(--secondary-color),
+            transparent
+          );
+          animation: borderScanVertical 2s linear infinite;
+        }
+
+        .submenu-border-right {
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 1px;
+          background: linear-gradient(
+            180deg,
+            transparent,
+            var(--secondary-color),
+            transparent
+          );
+          animation: borderScanVertical 2s linear infinite reverse;
+        }
+      }
+
       &:hover {
         .menu-hologram {
           transform: translateZ(20px);
@@ -353,6 +804,12 @@ const logout = () => {
           .menu-text {
             color: var(--primary-color);
             text-shadow: var(--glow-effect);
+          }
+
+          .dropdown-arrow {
+            color: var(--primary-color);
+            opacity: 1;
+            transform: translateY(-2px) scale(1.2);
           }
 
           .menu-line {
@@ -368,21 +825,79 @@ const logout = () => {
     }
   }
 
-  /* 控制面板 */
+  /* 控制面板样式保持不变 */
   .control-panel {
     display: flex;
     align-items: center;
     gap: 20px;
     position: relative;
     z-index: 2;
-    overflow: visible; /* 重要！ */
+    overflow: visible;
 
-    /* 全息用户头像 */
+    .theme-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      margin-right: 20px;
+      cursor: pointer;
+      z-index: 1;
+
+      .switch-track {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 15px;
+        background: linear-gradient(90deg, #555, #222);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3),
+          0 0 5px rgba(0, 240, 255, 0.5);
+        transition: all 0.3s ease;
+      }
+
+      .switch-thumb {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #fff, #ccc);
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2),
+          0 0 10px rgba(255, 255, 255, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        .sun-icon,
+        .moon-icon {
+          position: absolute;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+
+        .sun-icon {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
+        .moon-icon {
+          opacity: 0;
+          transform: translateX(20px);
+        }
+      }
+
+      &:hover .switch-track {
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3),
+          0 0 10px rgba(0, 240, 255, 0.8);
+      }
+    }
+
     .user-hologram {
       position: relative;
       width: 45px;
       height: 45px;
-      cursor: var(--cursor-pointer), pointer;
+      cursor: pointer;
       perspective: 500px;
       transform-style: preserve-3d;
       z-index: 5;
@@ -461,7 +976,6 @@ const logout = () => {
       }
     }
 
-    /* 全息用户菜单 */
     .hologram-menu {
       position: absolute;
       top: 100%;
@@ -477,9 +991,9 @@ const logout = () => {
       transform-origin: top right;
       perspective: 500px;
       transform-style: preserve-3d;
-      visibility: visible; /* 确保可见 */
-      opacity: 1; /* 明确设置不透明度 */
-      overflow-y: auto; /* 允许内容滚动 */
+      visibility: visible;
+      opacity: 1;
+      overflow-y: auto;
 
       .menu-grid {
         position: absolute;
@@ -500,7 +1014,7 @@ const logout = () => {
         padding: 12px 20px;
         color: var(--text-color);
         transition: all 0.3s ease;
-        cursor: var(--cursor-pointer), pointer;
+        cursor: pointer;
         gap: 10px;
         transform: translateZ(0);
 
@@ -546,28 +1060,47 @@ const logout = () => {
     }
   }
 
-  @keyframes particlePulse {
+  @keyframes borderScan {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
+  @keyframes borderScanVertical {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(200%);
+    }
+  }
+
+  @keyframes watermelonPulse {
     0%,
     100% {
       transform: scale(1);
-      opacity: 0.5;
     }
     50% {
-      transform: scale(1.2);
-      opacity: 0.8;
+      transform: scale(1.1);
     }
   }
 
-  @keyframes switchGlow {
-    0% {
-      background-position: 0% 50%;
-    }
-    100% {
-      background-position: 100% 50%;
-    }
+  /* 二级菜单过渡动画 */
+  .submenu-fade-enter-active,
+  .submenu-fade-leave-active {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
   }
 
-  /* 全息菜单过渡动画 */
+  .submenu-fade-enter-from,
+  .submenu-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) rotateX(-15deg) scale(0.9);
+  }
+
+  /* 用户菜单过渡动画 */
   .hologram-fade-enter-active,
   .hologram-fade-leave-active {
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -580,37 +1113,74 @@ const logout = () => {
   }
 }
 
-/* 白天模式调整 */
+/* 浅色模式样式调整 */
 .cyber-nav.light {
-  .holographic-logo {
-    .logo-layer.base {
-      color: var(--primary-color);
+  .theme-switch {
+    .switch-track {
+      background: linear-gradient(90deg, #ffd700, #ff8c00);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
+        0 0 5px rgba(255, 215, 0, 0.5);
     }
-    .logo-layer.glow {
-      text-shadow: 0 0 15px var(--secondary-color);
+
+    .switch-thumb {
+      transform: translateX(30px);
+      background: linear-gradient(145deg, #333, #111);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.5);
+
+      .sun-icon {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      .moon-icon {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
-    .logo-layer.shadow {
-      text-shadow: 0 0 30px var(--accent-color);
+
+    &:hover .switch-track {
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
+        0 0 10px rgba(255, 215, 0, 0.8);
     }
   }
 
-  .holographic-switch {
-    .switch-core {
-      background: rgba(255, 255, 255, 0.5);
-      border-color: var(--primary-color);
-      box-shadow: inset 0 0 10px rgba(0, 102, 204, 0.3), var(--hologram-effect);
+  .submenu-panel {
+    background: rgba(240, 242, 245, 0.95);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 102, 204, 0.2),
+      0 0 15px rgba(0, 102, 204, 0.3);
 
-      .switch-light {
-        background: linear-gradient(
-          90deg,
-          rgba(0, 102, 204, 0.1) 0%,
-          rgba(204, 0, 255, 0.1) 100%
-        );
+    .submenu-grid {
+      background: linear-gradient(rgba(0, 102, 204, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 102, 204, 0.05) 1px, transparent 1px);
+    }
+
+    .submenu-glow {
+      background: linear-gradient(
+        45deg,
+        var(--primary-color),
+        var(--secondary-color),
+        var(--accent-color)
+      );
+      opacity: 0.2;
+    }
+
+    .submenu-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(0, 102, 204, 0.1);
+
+      .submenu-content .submenu-desc {
+        color: rgba(51, 51, 68, 0.7);
       }
 
-      .switch-grid {
-        background: linear-gradient(rgba(0, 102, 204, 0.2) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 102, 204, 0.2) 1px, transparent 1px);
+      &:hover {
+        background: rgba(0, 102, 204, 0.1);
+        border-color: rgba(0, 102, 204, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15),
+          0 0 20px rgba(0, 102, 204, 0.2);
+
+        .submenu-content .submenu-desc {
+          color: rgba(0, 102, 204, 0.8);
+        }
       }
     }
   }
@@ -643,112 +1213,19 @@ const logout = () => {
       box-shadow: 0 0 10px var(--secondary-color);
     }
 
-    &:hover {
-      .hologram-avatar {
-        box-shadow: 0 0 25px rgba(0, 102, 204, 0.8);
-      }
+    &:hover .hologram-avatar {
+      box-shadow: 0 0 25px rgba(0, 102, 204, 0.8);
     }
   }
 
   .hologram-menu {
     background: rgba(240, 242, 245, 0.95);
     border-color: var(--primary-color);
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2), var(--hologram-effect);
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 102, 204, 0.3);
 
     .menu-grid {
       background: linear-gradient(rgba(0, 102, 204, 0.1) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 102, 204, 0.1) 1px, transparent 1px);
-    }
-  }
-}
-.theme-switch {
-  position: relative;
-  width: 60px;
-  height: 30px;
-  margin-right: 20px;
-  cursor: var(--cursor-pointer), pointer;
-  z-index: 1;
-
-  .switch-track {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 15px;
-    background: linear-gradient(90deg, #555, #222);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3),
-      0 0 5px rgba(0, 240, 255, 0.5);
-    transition: all 0.3s ease;
-  }
-
-  .switch-thumb {
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #fff, #ccc);
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 255, 255, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-    .sun-icon,
-    .moon-icon {
-      position: absolute;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-
-    .sun-icon {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .moon-icon {
-      opacity: 0;
-      transform: translateX(20px);
-    }
-  }
-
-  &:hover {
-    .switch-track {
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3),
-        0 0 10px rgba(0, 240, 255, 0.8);
-    }
-  }
-}
-
-/* 白天模式下的开关样式 */
-.cyber-nav.light .theme-switch {
-  .switch-track {
-    background: linear-gradient(90deg, #ffd700, #ff8c00);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
-      0 0 5px rgba(255, 215, 0, 0.5);
-  }
-
-  .switch-thumb {
-    transform: translateX(30px);
-    background: linear-gradient(145deg, #333, #111);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.5);
-
-    .sun-icon {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-
-    .moon-icon {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  &:hover {
-    .switch-track {
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
-        0 0 10px rgba(255, 215, 0, 0.8);
     }
   }
 }
