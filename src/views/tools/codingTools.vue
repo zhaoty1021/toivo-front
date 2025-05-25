@@ -50,7 +50,7 @@ import TimestampTool from "@/components/codingTools/TimestampTool.vue";
 import SqlTool from "@/components/codingTools/SqlTool.vue";
 import ToolButton from "@/components/codingTools/ToolButton.vue";
 import HttpCodeTool from "@/components/codingTools/HttpCodeTool.vue";
-import picCompressTool from "@/components/codingTools/picCompressTool.vue";
+import PicCompressTool from "@/components/codingTools/PicCompressTool.vue";
 
 const theme = inject("theme", "dark");
 
@@ -74,7 +74,7 @@ const tools = ref([
     id: "picCompress",
     name: "图片压缩",
     icon: "compress",
-    component: picCompressTool,
+    component: PicCompressTool,
   },
 ]);
 
