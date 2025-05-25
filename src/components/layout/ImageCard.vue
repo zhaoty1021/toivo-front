@@ -484,7 +484,7 @@ const formatRelativeTime = (isoString) => {
   height: 180px;
   margin-bottom: 16px;
   perspective: 1000px;
-  margin-top: 10px;
+  margin-top: 25px;
 
   @media (max-width: 768px) {
     flex-direction: column;

@@ -59,35 +59,34 @@
               <div class="submenu-grid"></div>
               <div class="submenu-glow"></div>
 
-              <div class="submenu-container">
+              <div class="submenu-container-horizontal">
                 <div
                   v-for="subItem in item.children"
                   :key="subItem.path"
-                  class="submenu-item"
+                  class="submenu-item-horizontal"
                   @click.stop="handleSubMenuClick(subItem)"
                 >
-                  <div class="submenu-hologram">
+                  <div class="submenu-hologram-horizontal">
                     <SvgIcon
                       :name="subItem.icon"
-                      class="submenu-icon"
+                      class="submenu-icon-horizontal"
                       :style="{ color: subItem.color || item.color }"
                     />
-                    <div class="submenu-content">
-                      <span class="submenu-title">{{ subItem.name }}</span>
-                      <span v-if="subItem.desc" class="submenu-desc">{{
-                        subItem.desc
+                    <div class="submenu-content-horizontal">
+                      <span class="submenu-title-horizontal">{{
+                        subItem.name
                       }}</span>
+                      <span
+                        v-if="subItem.desc"
+                        class="submenu-desc-horizontal"
+                        >{{ subItem.desc }}</span
+                      >
                     </div>
-                    <div class="submenu-particle-trail"></div>
                   </div>
                 </div>
               </div>
 
               <!-- 全息边框效果 -->
-              <div class="submenu-border-top"></div>
-              <div class="submenu-border-bottom"></div>
-              <div class="submenu-border-left"></div>
-              <div class="submenu-border-right"></div>
             </div>
           </transition>
         </div>
@@ -162,113 +161,56 @@ const menuItems = [
     color: "#FF5F5F",
   },
   {
-    path: "/archive",
-    name: "归档",
-    icon: "nav-archive",
-    color: "#5F9EA0",
+    path: "/article",
+    name: "文章",
+    icon: "nav-article",
+    color: "#FF5F5F",
     children: [
       {
-        path: "/archive/2024",
-        name: "2024年",
-        desc: "最新文章",
-        icon: "nav-time",
+        path: "/archive",
+        name: "归档",
+        icon: "nav-archive",
         color: "#5F9EA0",
       },
       {
-        path: "/archive/2023",
-        name: "2023年",
-        desc: "往年精选",
-        icon: "nav-time",
-        color: "#5F9EA0",
+        path: "/category",
+        name: "分类",
+        icon: "nav-category",
+        color: "#9370DB",
       },
-      {
-        path: "/archive/all",
-        name: "全部归档",
-        desc: "查看所有",
-        icon: "nav-list",
-        color: "#5F9EA0",
-      },
+      { path: "/tags", name: "标签", icon: "nav-tag", color: "#FFA500" },
     ],
   },
   {
-    path: "/category",
-    name: "分类",
-    icon: "nav-category",
-    color: "#9370DB",
+    path: "/explore",
+    name: "探索",
+    icon: "nav-explore",
+    color: "#FF5F5F",
     children: [
       {
-        path: "/category/tech",
-        name: "技术分享",
-        desc: "编程开发",
-        icon: "nav-code",
+        path: "/musicHouse",
+        name: "音乐屋",
+        desc: "音乐分享",
+        icon: "nav-music",
+        color: "#5F9EA0",
+      },
+      {
+        path: "/recommendGame",
+        name: "游戏人生",
+        desc: "游戏推荐",
+        icon: "nav-game",
         color: "#9370DB",
       },
       {
-        path: "/category/life",
-        name: "生活随笔",
-        desc: "日常记录",
-        icon: "nav-heart",
-        color: "#9370DB",
-      },
-      {
-        path: "/category/travel",
-        name: "旅行游记",
-        desc: "世界各地",
-        icon: "nav-map",
-        color: "#9370DB",
-      },
-      {
-        path: "/category/book",
-        name: "读书笔记",
-        desc: "知识分享",
-        icon: "nav-book",
+        path: "/recommendSite",
+        name: "推荐网站",
+        desc: "有趣的网站",
+        icon: "nav-site",
         color: "#9370DB",
       },
     ],
   },
-  {
-    path: "/tags",
-    name: "标签",
-    icon: "nav-tag",
-    color: "#FFA500",
-    children: [
-      {
-        path: "/tags/vue",
-        name: "Vue.js",
-        desc: "前端框架",
-        icon: "nav-vue",
-        color: "#FFA500",
-      },
-      {
-        path: "/tags/javascript",
-        name: "JavaScript",
-        desc: "编程语言",
-        icon: "nav-js",
-        color: "#FFA500",
-      },
-      {
-        path: "/tags/css",
-        name: "CSS",
-        desc: "样式设计",
-        icon: "nav-css",
-        color: "#FFA500",
-      },
-      {
-        path: "/tags/nodejs",
-        name: "Node.js",
-        desc: "后端开发",
-        icon: "nav-node",
-        color: "#FFA500",
-      },
-      {
-        path: "/tags/all",
-        name: "全部标签",
-        desc: "查看所有",
-        icon: "nav-tag",
-        color: "#FFA500",
-      },
-    ],
-  },
+
   {
     path: "/message",
     name: "留言",
@@ -310,24 +252,17 @@ const menuItems = [
     color: "#32CD32",
     children: [
       {
-        path: "/about/me",
+        path: "/user",
         name: "关于我",
         desc: "个人介绍",
-        icon: "nav-user",
+        icon: "nav-me",
         color: "#32CD32",
       },
       {
-        path: "/about/site",
+        path: "/about",
         name: "关于本站",
         desc: "网站介绍",
-        icon: "nav-info",
-        color: "#32CD32",
-      },
-      {
-        path: "/about/contact",
-        name: "联系方式",
-        desc: "取得联系",
-        icon: "nav-mail",
+        icon: "nav-mysite",
         color: "#32CD32",
       },
     ],
@@ -593,8 +528,8 @@ const logout = () => {
         background: var(--bg-color);
         backdrop-filter: blur(15px);
         border-radius: 15px;
-        padding: 25px;
-        min-width: 600px;
+
+        min-width: 100px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
           0 0 0 1px rgba(0, 240, 255, 0.2), var(--hologram-effect);
         z-index: 1000;
@@ -642,91 +577,108 @@ const logout = () => {
           z-index: 2;
         }
 
-        .submenu-item {
-          position: relative;
-          padding: 18px;
-          border-radius: 10px;
+        .submenu-container-horizontal {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 10px;
+          padding: 15px;
+          overflow-x: auto;
+          scrollbar-width: none; /* 隐藏滚动条 */
+          &::-webkit-scrollbar {
+            display: none;
+          }
+        }
+
+        .submenu-item-horizontal {
+          flex: 0 0 auto;
+          min-width: 80px;
+          padding: 10px 15px;
+          border-radius: 8px;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid rgba(0, 240, 255, 0.1);
+          position: relative;
           overflow: hidden;
 
-          .submenu-hologram {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            position: relative;
-            z-index: 2;
-
-            .submenu-icon {
-              width: 24px;
-              height: 24px;
-              flex-shrink: 0;
-              transition: all 0.3s ease;
-              filter: drop-shadow(0 0 3px currentColor);
-            }
-
-            .submenu-content {
-              flex: 1;
-
-              .submenu-title {
-                display: block;
-                font-size: 16px;
-                font-weight: 600;
-                color: var(--text-color);
-                margin-bottom: 4px;
-                transition: all 0.3s ease;
-              }
-
-              .submenu-desc {
-                display: block;
-                font-size: 13px;
-                color: rgba(255, 255, 255, 0.6);
-                transition: all 0.3s ease;
-              }
-            }
-
-            .submenu-particle-trail {
-              position: absolute;
-              top: 0;
-              right: -100%;
-              width: 100%;
-              height: 100%;
-              background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(0, 240, 255, 0.1),
-                transparent
-              );
-              transition: right 0.5s ease;
-            }
-          }
-
           &:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-3px);
             background: rgba(0, 240, 255, 0.05);
             border-color: rgba(0, 240, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
-              0 0 20px rgba(0, 240, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2),
+              0 0 10px rgba(0, 240, 255, 0.2);
+          }
+        }
 
-            .submenu-hologram {
-              .submenu-icon {
-                transform: scale(1.1);
-                filter: drop-shadow(0 0 8px currentColor);
-              }
+        .submenu-hologram-horizontal {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1px;
+          position: relative;
+          z-index: 2;
+        }
 
-              .submenu-title {
-                color: var(--primary-color);
-                text-shadow: 0 0 10px var(--primary-color);
-              }
+        .submenu-icon-horizontal {
+          width: 20px;
+          height: 20px;
+          transition: all 0.3s ease;
+          filter: drop-shadow(0 0 3px currentColor);
+        }
 
-              .submenu-desc {
-                color: rgba(0, 240, 255, 0.8);
-              }
+        .submenu-content-horizontal {
+          text-align: center;
+        }
 
-              .submenu-particle-trail {
-                right: 100%;
+        .submenu-title-horizontal {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-color);
+          transition: all 0.3s ease;
+        }
+
+        .submenu-desc-horizontal {
+          display: block;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.6);
+          transition: all 0.3s ease;
+        }
+
+        .submenu-item-horizontal:hover {
+          .submenu-icon-horizontal {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 6px currentColor);
+          }
+
+          .submenu-title-horizontal {
+            color: var(--primary-color);
+            text-shadow: 0 0 8px var(--primary-color);
+          }
+
+          .submenu-desc-horizontal {
+            color: rgba(0, 240, 255, 0.8);
+          }
+        }
+
+        /* 浅色模式适配 */
+        .cyber-nav.light {
+          .submenu-item-horizontal {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 102, 204, 0.1);
+
+            .submenu-desc-horizontal {
+              color: rgba(51, 51, 68, 0.7);
+            }
+
+            &:hover {
+              background: rgba(0, 102, 204, 0.1);
+              border-color: rgba(0, 102, 204, 0.3);
+              box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15),
+                0 0 10px rgba(0, 102, 204, 0.2);
+
+              .submenu-desc-horizontal {
+                color: rgba(0, 102, 204, 0.8);
               }
             }
           }
