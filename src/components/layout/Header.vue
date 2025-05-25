@@ -250,13 +250,13 @@ const menuItems = [
       {
         path: "/codingTools",
         name: "开发辅助工具",
-        icon: "nav-box",
+        icon: "nav-coding",
         color: "#FF69B4",
       },
       {
         path: "/funTools",
         name: "趣味小工具",
-        icon: "nav-box",
+        icon: "nav-funTools",
         color: "#FF69B4",
       },
     ],

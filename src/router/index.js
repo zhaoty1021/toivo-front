@@ -22,6 +22,7 @@ import recommendGame from "../views/game/recommendGame.vue";
 import musicHouse from "../views/musicHouse/musicHouse.vue";
 import siteTime from "../views/time/siteTime.vue";
 import { pa } from "element-plus/es/locales.mjs";
+import codingTools from "../views/tools/codingTools.vue";
 
 const routes = [
     {
@@ -148,6 +149,13 @@ const routes = [
                 component: siteTime,
                 meta: {
                     title: "站点时间"
+                }
+            },
+            {
+                path: "/codingTools",
+                component: codingTools,
+                meta: {
+                    title: "编程工具"
                 }
             }
 

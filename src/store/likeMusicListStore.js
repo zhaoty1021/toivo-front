@@ -16,7 +16,7 @@ export const useLikeMusicListStore = defineStore('likeMusicList', () => {
     
     try {
       // 1. 获取喜欢的音乐ID列表
-    const likeListResponse = await getLikeList()
+      const likeListResponse = await getLikeList()
         // const likeListResponse = {
         //   code: 200,
           

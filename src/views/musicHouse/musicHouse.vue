@@ -240,7 +240,7 @@ const scrollToCurrentLyric = () => {
 
     if (container && activeLine) {
       const lineOffsetTop = activeLine.offsetTop;
-      const offset = activeLine.clientHeight * 13;
+      const offset = activeLine.clientHeight * 14.5;
 
       container.scrollTo({
         top: lineOffsetTop - offset,
