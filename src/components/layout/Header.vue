@@ -138,6 +138,7 @@
 </template>
 
 <script setup>
+import { de } from "element-plus/es/locales.mjs";
 import { ref, inject } from "vue";
 import { useRouter } from "vue-router";
 
@@ -213,38 +214,54 @@ const menuItems = [
 
   {
     path: "/message",
-    name: "留言",
-    icon: "nav-message",
+    name: "社交",
+    icon: "nav-social",
     color: "#20B2AA",
-  },
-  {
-    path: "/say",
-    name: "说说",
-    icon: "nav-say",
-    color: "#FF69B4",
-  },
-  {
-    path: "/link",
-    name: "友链",
-    icon: "nav-link",
-    color: "#1E90FF",
     children: [
       {
-        path: "/link/apply",
-        name: "申请友链",
-        desc: "加入我们",
-        icon: "nav-add",
-        color: "#1E90FF",
+        path: "/message",
+        name: "留言",
+        desc: "给我留言",
+        icon: "nav-message",
+        color: "#20B2AA",
       },
       {
-        path: "/link/check",
-        name: "友链检测",
-        desc: "状态检查",
-        icon: "nav-check",
+        path: "/say",
+        name: "说说",
+        desc: "随便说说",
+        icon: "nav-say",
+        color: "#FF69B4",
+      },
+      {
+        path: "/link",
+        name: "友链",
+        desc: "一起玩耍！",
+        icon: "nav-link",
         color: "#1E90FF",
       },
     ],
   },
+  {
+    path: "/tools",
+    name: "工具箱",
+    icon: "nav-box",
+    color: "#FF69B4",
+    children: [
+      {
+        path: "/codingTools",
+        name: "开发辅助工具",
+        icon: "nav-box",
+        color: "#FF69B4",
+      },
+      {
+        path: "/funTools",
+        name: "趣味小工具",
+        icon: "nav-box",
+        color: "#FF69B4",
+      },
+    ],
+  },
+
   {
     path: "/about",
     name: "关于",
