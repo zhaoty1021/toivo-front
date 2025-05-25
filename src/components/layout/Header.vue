@@ -265,6 +265,13 @@ const menuItems = [
         icon: "nav-mysite",
         color: "#32CD32",
       },
+      {
+        path: "/siteTime",
+        name: "网站建设",
+        desc: "网站建设时间表",
+        icon: "nav-build",
+        color: "#32CD32",
+      },
     ],
   },
 ];

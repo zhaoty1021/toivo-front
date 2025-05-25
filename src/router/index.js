@@ -20,6 +20,7 @@ import TagArticles from "../views/tag/TagArticles.vue";
 import recommendSite from "../views/recommendSite/recommendSite.vue";
 import recommendGame from "../views/game/recommendGame.vue";
 import musicHouse from "../views/musicHouse/musicHouse.vue";
+import siteTime from "../views/time/siteTime.vue";
 import { pa } from "element-plus/es/locales.mjs";
 
 const routes = [
@@ -141,7 +142,15 @@ const routes = [
                 meta: {
                     title: "音乐屋"
                 }
+            },
+            {
+                path: "/siteTime",
+                component: siteTime,
+                meta: {
+                    title: "站点时间"
+                }
             }
+
         ],
     },
     {

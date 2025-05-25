@@ -28,14 +28,6 @@
             </div>
           </div>
           <div class="note-text">{{ note.content }}</div>
-          <div class="note-actions">
-            <el-button text @click="likeNote(note.id)">
-              <el-icon><Star /></el-icon> {{ note.likes }}
-            </el-button>
-            <el-button text @click="deleteNote(note.id)">
-              <el-icon><Delete /></el-icon>
-            </el-button>
-          </div>
         </div>
       </div>
 
@@ -274,6 +266,7 @@ const addNote = () => {
       animation: fadeInUp 0.5s ease-out forwards;
       animation-delay: var(--delay);
       opacity: 0;
+      max-height: 120px;
 
       &:hover {
         transform: translateY(-3px);
@@ -326,44 +319,9 @@ const addNote = () => {
         white-space: pre-wrap;
         padding-left: 52px; /* 头像宽度 + 间距 */
         position: relative;
-        min-height: calc(var(--note-paper-line) * 3);
         font-weight: 600; /* 加粗字体 */
         text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.1); /* 轻微阴影增加立体感 */
         letter-spacing: 0.5px; /* 适当字间距 */
-      }
-
-      .note-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        padding-top: 12px;
-
-        .el-button {
-          color: var(--text-color);
-          opacity: 0.7;
-          transition: all 0.2s;
-
-          &:hover {
-            color: var(--primary-color);
-            opacity: 1;
-            transform: scale(1.1);
-          }
-
-          .el-icon {
-            margin-right: 4px;
-          }
-        }
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: var(--primary-color);
-        border-radius: 4px 0 0 4px;
       }
     }
   }
