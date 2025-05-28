@@ -23,6 +23,7 @@ import musicHouse from "../views/musicHouse/musicHouse.vue";
 import siteTime from "../views/time/siteTime.vue";
 import { pa } from "element-plus/es/locales.mjs";
 import codingTools from "../views/tools/codingTools.vue";
+import funTools from "../views/tools/funTools.vue";
 
 const routes = [
     {
@@ -156,6 +157,13 @@ const routes = [
                 component: codingTools,
                 meta: {
                     title: "编程工具"
+                }
+            },
+            {
+                path: "/funTools",
+                component: funTools,
+                meta: {
+                    title: "趣味工具"
                 }
             }
 
