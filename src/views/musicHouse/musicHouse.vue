@@ -298,8 +298,8 @@ const playTrack = async (track) => {
   // 设置音频源
   try {
     const urlResponse = await getMusicUrl(track.id);
-    if (urlResponse.code === 200) {
-      const url = urlResponse.data.find((u) => u.id === track.id)?.url;
+    if (urlResponse) {
+      const url = urlResponse.find((u) => u.id === track.id)?.url;
       if (url) {
         audioElement.value.src = url;
         play();
