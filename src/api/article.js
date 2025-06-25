@@ -5,7 +5,7 @@ import request from '@/utils/request'
  */
 export function getArticleDetailApi(id) {
   return request({
-    url: `/api/article/detail/${id}`,
+    url: `/api/articles/detail/${id}`,
     method: 'get'
   })
 } 
@@ -15,7 +15,7 @@ export function getArticleDetailApi(id) {
  */
 export function getArticlesApi(params) {
   return request({
-      url: '/api/article/list',
+      url: '/api/articles/list',
       method: 'get',
       params: params
   })

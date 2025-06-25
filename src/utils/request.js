@@ -35,36 +35,26 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-    /**
-     * If you want to get http information such as headers or status
-     * Please return  response => response
-     */
-
-    /**
-     * Determine the request status by custom code
-     * Here is just an example
-     * You can also judge the status by HTTP Status Code
-     */
     response => {
         const res = response.data
-        // if the custom code is not 20000, it is judged as an error.
         const userStore = useUserStore();
-        if (res.code !== 200) {
+        
+        if (res.code !== 200 && res.code !== "200") {
             if (res.code == 401) {
-                //removeToken()
                 removeToken()
                 sessionStorage.removeItem("user")
                 userStore.setUserInfo(null)
                 userStore.setLoginFlag(true)
             }
-            //如果是校验微信登录是否授权的接口 则不进行错误输出
+            
             if (response.config.url !== "/oauth/wechat/is_login") {
                 ElMessage({ message: res.message, type: 'error' })
             }
 
             return Promise.reject(new Error(res.message || 'Error'))
         } else {
-            return res
+            // 修改这里：返回res.data而不是res
+            return res.data || res // 兼容没有data字段的情况
         }
     },
     error => {
