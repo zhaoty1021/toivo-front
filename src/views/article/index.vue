@@ -478,9 +478,9 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400;500;700&display=swap");
 
 .article-page {
-  max-width: 1300px;
-  margin: 0 auto;
   padding: 12px;
+  justify-content: center;
+  display: flex;
 
   @media (max-width: 768px) {
     padding: 12px;
@@ -518,7 +518,7 @@ export default {
   //居中
   justify-content: center;
   margin: 0 auto;
-  max-width: 1200px;
+  width: 1300px;
   position: relative;
 
   &.center {
@@ -536,8 +536,8 @@ export default {
 
 .article-main {
   background: var(--bg-color);
-  width: 80%;
-  margin-left: 70px;
+  justify-content: center;
+  width: 100%;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;

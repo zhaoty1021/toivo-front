@@ -92,13 +92,6 @@ const setDocumentHead = (config) => {
   setMetaTag('description', config.site_description)
   setMetaTag('keywords', config.site_keywords)
   
-  // 设置背景图（可选）
-  if (config.site_background) {
-    document.body.style.backgroundImage = `url(${config.site_background})`
-    document.body.style.backgroundSize = 'cover'
-    document.body.style.backgroundRepeat = 'no-repeat'
-    document.body.style.backgroundAttachment = 'fixed'
-  }
 }
 
 // 初始化应用

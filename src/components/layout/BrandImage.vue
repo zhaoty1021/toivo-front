@@ -33,6 +33,7 @@ const imageList = [
   z-index: 1;
   background-color: #363636;
   overflow: hidden;
+  margin-top: 70px;
 
   .item {
     position: absolute;

@@ -126,7 +126,8 @@ const deleteText = (text, i) => {
 
   position: relative;
   width: 100%;
-  height: 60vh;
+  height: 75vh;
+  margin-bottom: 20px;
   min-height: 300px;
   display: flex;
   justify-content: center;
