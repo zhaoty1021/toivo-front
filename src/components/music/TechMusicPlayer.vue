@@ -373,17 +373,17 @@ const handleOutsideClick = (event) => {
 const recommendMusic = async () => {
   try {
     const response = await recommendSongs();
-    if (response.code === 200) {
-      const idList = response.data.dailySongs.map((song) => song.id).join(",");
+    if (response) {
+      const idList = response.dailySongs.map((song) => song.id).join(",");
       const urlResponse = await getMusicUrl(idList);
 
-      if (urlResponse.code === 200) {
-        playlist.value = response.data.dailySongs.map((song) => ({
+      if (urlResponse) {
+        playlist.value = response.dailySongs.map((song) => ({
           id: song.id,
           title: song.name,
           artist: song.ar[0].name,
           cover: song.al.picUrl,
-          src: urlResponse.data.find((u) => u.id === song.id)?.url || "",
+          src: urlResponse.find((u) => u.id === song.id)?.url || "",
         }));
 
         currentTrackIndex.value = 0;
@@ -398,7 +398,8 @@ const recommendMusic = async () => {
 const initMusicLyric = async () => {
   if (currentTrack.value) {
     const lyricResponse = await getLyric(currentTrack.value.id);
-    if (lyricResponse.code === 200) {
+    if (lyricResponse) {
+      console.log("歌词响应:", lyricResponse);
       currentTrack.value.lyric = lyricResponse.lrc.lyric;
       lyrics.value = parseLyrics(currentTrack.value.lyric);
       currentLyricIndex.value = -1;
