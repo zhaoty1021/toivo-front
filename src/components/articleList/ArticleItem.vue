@@ -93,7 +93,7 @@
               >{{ tag.name }}</n-tag
             >
             <svg-icon name="yuan"></svg-icon>
-            <span class="read-time"> 1分钟阅读 </span>
+            <span class="read-time"> {{ readingTime }} 阅读 </span>
           </div>
         </div>
       </div>
@@ -148,6 +148,28 @@ const formatDate = (isoString) => {
     return isoString; // 如果格式化失败返回原始字符串
   }
 };
+
+// 计算阅读时间（基于字数）
+const readingTime = computed(() => {
+  console.log("计算阅读时间", props.article.wordCount);
+  if (!props.article.wordCount) return "1分钟";
+
+  // 假设平均阅读速度：200字/分钟
+  const wordsPerMinute = 200;
+  const minutes = Math.ceil(props.article.wordCount / wordsPerMinute);
+
+  // 超过60分钟显示小时
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}小时${
+      remainingMinutes > 0 ? remainingMinutes + "分钟" : ""
+    }`;
+  }
+
+  return `${minutes}分钟`;
+});
+
 function handleClike(id, path) {
   router.push({
     path,

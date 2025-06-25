@@ -164,6 +164,7 @@ const fetchArticles = async () => {
         createTime: item.createTime,
         updateTime: item.updateTime,
         cover: item.articleCover || "",
+        wordCount: item.wordCount || 0,
         isOriginal: item.articleType === 1,
         isStick: item.isTop === 1,
         summary: item.articleDesc,

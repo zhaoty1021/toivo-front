@@ -37,7 +37,7 @@
             <span>{{ article.commentCount || 0 }} 评论</span>
           </div>
           <div class="stat-item">
-            <svg-icon name="file-text" class="meta-icon" />
+            <svg-icon name="word-count" class="meta-icon" />
             <span>{{ article.wordCount || 0 }} 字</span>
           </div>
         </div>
