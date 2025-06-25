@@ -39,7 +39,10 @@
                 <span class="article-meta-separator">|</span>
               </span>
               <span class="article-meta" v-if="showUpdateTime">
-                <svg-icon name="sign1" class="article-meta-icon"></svg-icon>
+                <svg-icon
+                  name="update-time"
+                  class="article-meta-icon"
+                ></svg-icon>
                 <span>{{ formattedUpdateTime }}</span>
                 <span class="article-meta-separator">|</span>
               </span>

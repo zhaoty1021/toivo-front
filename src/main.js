@@ -27,6 +27,15 @@ const app = createApp(App)
 const BASE_URL = import.meta.env.VITE_APP_BASE_API || '/toivo/' // 根据你的Vite配置调整
 const API_PREFIX = '/api/admin/config/group/BASIC'
 
+app.config.warnHandler = (msg) => {
+  const ignoreList = [
+    'Extraneous non-props attributes',
+    'Missing required prop: "pageData"'
+  ]
+  if (ignoreList.some(item => msg.includes(item))) return
+  console.warn(msg)
+}
+
 // 默认配置
 const defaultConfig = {
   site_name: '默认标题',

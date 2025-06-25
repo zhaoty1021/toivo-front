@@ -101,6 +101,7 @@ const props = defineProps({
 // 日期格式化函数
 const formatDate = (isoString) => {
   try {
+    console.log("格式化日期:", isoString);
     const date = parseISO(isoString);
     return format(date, "yyyy年MM月dd日 HH:mm", { locale: zhCN });
   } catch (e) {
